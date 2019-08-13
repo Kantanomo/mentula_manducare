@@ -1,0 +1,148 @@
+﻿.mdl-layout__tab-panel {
+    height: calc(100% - 112px);
+}
+.status-card {
+    float: left;
+    height: 100%;
+}
+    .status-card .mdl-card__title {
+        height: 256px;
+        -background: url(https://vignette.wikia.nocookie.net/halo/images/f/fe/Lockout546.jpg/revision/latest?cb=20110501022546);
+        background-size: 105% 105% !important;
+        filter: contrast(1.259);
+        flex-grow: 0 !important;
+    }
+        .status-card .mdl-card__title .mdl-card__title-text {
+            background: rgba(0,0,0,0.5);
+            padding: 5px;
+            filter: contrast(1) !important;
+            color: white;
+        }
+    .status-card .mdl-card__supporting-text {
+        height: 250px;
+    }
+.playerlist-container {
+    height: 100%;
+    width: 525px;
+    float: left;
+}
+.player-table {
+    width: 100%;
+}
+    .player-table td, .player-table tr {
+        height: 47px !important;
+    }
+    .player-table .player-emblem {
+        background-size: 60px !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+    }
+.banlist-container {
+    height: 100%;
+    float: left;
+    width: 310px;
+}
+    .banlist-container h4 {
+        margin: 8px 0 0px;
+        text-align: center;
+        color: rgba(0,0,0,.54);
+        border: 1px solid rgba(0,0,0,.12);
+        border-top-width: 0;
+        border-left-width: 0;
+        border-right-width: 0;
+        box-sizing: border-box;
+        position: relative;
+        font-size: 20px;
+        line-height: 35px;
+        font-weight: 500;
+        padding-bottom: 5px;
+    }
+        .banlist-container h4 i {
+            position: absolute;
+            right: 6px;
+            top: 5px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+            .banlist-container h4 i:hover {
+                color: rgba(0,0,0,.28);
+            }
+    .banlist-container .mdl-list {
+        overflow-y: scroll;
+        height: calc(100% - 66px);
+        box-sizing: content-box;
+    }
+
+.banlist .mdl-list__item-secondary-action {
+    color: rgba(0,0,0,.54);
+}
+    .banlist .mdl-list__item-secondary-action:hover { 
+        color: red; 
+    }
+
+.playlist-container {
+    height: 260px;
+    border: 1px solid rgba(0,0,0,.12);
+    box-sizing: border-box;
+    background: rgba(0,0,0,0.05);
+    overflow-y: scroll;
+}
+    .playerlist-container ul {
+        padding: 0;
+        margin: 0;
+    }
+        .playlist-container ul li {
+            padding: 5px 10px;
+        }
+            .playlist-container ul li:hover {
+                background: rgba(0,0,0,0.05);
+                cursor: pointer;
+            }
+.right-container {
+    float: left;
+    height: 100%;
+    width: calc(100% - 1165px);
+}
+    .right-container h4 {
+        margin: 8px 0 0px;
+        text-align: center;
+        color: rgba(0,0,0,.54);
+        border: 1px solid rgba(0,0,0,.12);
+        border-top-width: 0;
+        border-left-width: 0;
+        border-right-width: 0;
+        box-sizing: border-box;
+        position: relative;
+        font-size: 20px;
+        line-height: 35px;
+        font-weight: 500;
+        padding-bottom: 5px;
+    }
+        .right-container h4 i {
+            position: absolute;
+            right: 6px;
+            top: 5px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+            .right-container h4 i:hover {
+                color: rgba(0,0,0,.28);
+            }
+.log-container {
+    height: calc(50% - 41px);
+    width: 100%;
+    border-bottom: 1px solid rgba(0,0,0,.12);
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 15px;
+}
+    .log-container .log {
+        border: 1px solid rgba(0,0,0,.12);
+        box-sizing: border-box;
+        background: rgba(0,0,0,0.05);
+        overflow-y: scroll;
+        height: 100%;
+    }   
+        .log-container .log .log-item {
+            margin: 0;
+        }

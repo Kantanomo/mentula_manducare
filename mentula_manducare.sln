@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mentula_manducare", "mentula_manducare\mentula_manducare.csproj", "{FA90B29B-56DC-4A77-B891-1C49E7284A66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mentula_manducare_client", "mentula_manducare_client\mentula_manducare_client.csproj", "{8338A480-318D-48C4-ADE5-97E979EC3BEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA90B29B-56DC-4A77-B891-1C49E7284A66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA90B29B-56DC-4A77-B891-1C49E7284A66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA90B29B-56DC-4A77-B891-1C49E7284A66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA90B29B-56DC-4A77-B891-1C49E7284A66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8338A480-318D-48C4-ADE5-97E979EC3BEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8338A480-318D-48C4-ADE5-97E979EC3BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8338A480-318D-48C4-ADE5-97E979EC3BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8338A480-318D-48C4-ADE5-97E979EC3BEC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C24B6F57-D8C8-49A7-8FDF-A90E26694275}
+	EndGlobalSection
+EndGlobal
