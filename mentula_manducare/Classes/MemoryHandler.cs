@@ -145,6 +145,9 @@ namespace mentula_manducare.Classes
         public byte ReadByte(int pOffset, bool addToBase = false) => 
             ReadMemory(addToBase, pOffset, 1)[0];
 
+        public bool ReadBool(int pOffset, bool addToBase = false) =>
+            ReadByte(pOffset, addToBase) == 1;
+
         public short ReadShort(int pOffset, bool addToBase = false) => 
             BitConverter.ToInt16(ReadMemory(addToBase, pOffset, 2), 0);
 
@@ -180,6 +183,9 @@ namespace mentula_manducare.Classes
 
         public void WriteByte(int pOffset, byte pByte, bool addToBase = false) =>
             WriteMemory(addToBase, pOffset, new byte[] {pByte});
+
+        public void WriteBool(int pOffset, bool pByte, bool addToBase = false) =>
+            WriteByte(pOffset, (pByte) ?  (byte)1 :(byte)0, addToBase);
 
         public void WriteShort(int pOffset, short pBytes, bool addToBase = false) =>
             WriteMemory(addToBase, pOffset, BitConverter.GetBytes(pBytes));

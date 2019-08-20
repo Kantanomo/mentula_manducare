@@ -1,15 +1,22 @@
-﻿.mdl-layout__tab-panel {
-    height: calc(100% - 112px);
+﻿.mdl-layout__content {
+    display: flex !important;
+    overflow-y: hidden !important;
+}
+.mdl-layout__tab-panel {
+    height: 100%;
+    width: 100%;
+    -height: calc(100% - 112px);
 }
 .status-card {
     float: left;
     height: 100%;
+    border-right: 1px solid rgba(0,0,0,.12);
 }
     .status-card .mdl-card__title {
         height: 256px;
         -background: url(https://vignette.wikia.nocookie.net/halo/images/f/fe/Lockout546.jpg/revision/latest?cb=20110501022546);
         background-size: 105% 105% !important;
-        filter: contrast(1.259);
+        filter: contrast(1.4) saturate(1.2);
         flex-grow: 0 !important;
     }
         .status-card .mdl-card__title .mdl-card__title-text {
@@ -20,14 +27,53 @@
         }
     .status-card .mdl-card__supporting-text {
         height: 250px;
+        position: relative;
     }
+
+.server_lobby_control_container {
+    float: left;
+    bottom: 10px;
+    position: absolute;
+}
+.server_lobby_control_container .mdl-switch {
+    float: left;
+    width: auto;
+    margin-top: 5px;
+}
+.server_lobby_control_container .mdl-button {
+    float: left;
+    margin-left: 27px;
+}
+
+.playlist-container {
+    height: 260px;
+    border: 1px solid rgba(0,0,0,.12);
+    box-sizing: border-box;
+    background: rgba(0,0,0,0.05);
+    overflow-y: scroll;
+}
+.playerlist-container ul {
+    padding: 0;
+    margin: 0;
+}
+.playlist-container ul li {
+    padding: 5px 10px;
+}
+.playlist-container ul li:hover {
+    background: rgba(0,0,0,0.05);
+    cursor: pointer;
+}
 .playerlist-container {
     height: 100%;
     width: 525px;
     float: left;
+    border-right: 1px solid rgba(0,0,0,.12);
+    box-sizing: border-box;
 }
 .player-table {
     width: 100%;
+    border-right: 0 !important;
+    border-left: 0 !important;
 }
     .player-table td, .player-table tr {
         height: 47px !important;
@@ -37,10 +83,21 @@
         background-repeat: no-repeat !important;
         background-position: center !important;
     }
-.banlist-container {
-    height: 100%;
+
+
+
+
+
+.middle-container {
     float: left;
+    height: 100%;
     width: 310px;
+}
+.banlist-container, .vip-container {
+    height: 50%;
+    width: 100%;
+    border: 1px solid rgba(0,0,0,.12);
+    border-left: none;
 }
     .banlist-container h4 {
         margin: 8px 0 0px;
@@ -55,56 +112,89 @@
         font-size: 20px;
         line-height: 35px;
         font-weight: 500;
-        padding-bottom: 5px;
+        padding-bottom: 4px;
     }
-        .banlist-container h4 i {
+        .banlist-container h4 i, .vip-container h4 i {
             position: absolute;
             right: 6px;
             top: 5px;
             font-size: 30px;
             cursor: pointer;
         }
-            .banlist-container h4 i:hover {
+            .banlist-container h4 i:hover, .vip-container h4 i:hover {
                 color: rgba(0,0,0,.28);
             }
     .banlist-container .mdl-list {
         overflow-y: scroll;
-        height: calc(100% - 66px);
+        height: calc(100% - 65px - 45px);
         box-sizing: content-box;
     }
-
 .banlist .mdl-list__item-secondary-action {
-    color: rgba(0,0,0,.54);
+         color: rgba(0,0,0,.54);
+     }
+.banlist .mdl-list__item-secondary-action:hover { 
+    color: red; 
 }
-    .banlist .mdl-list__item-secondary-action:hover { 
-        color: red; 
-    }
 
-.playlist-container {
-    height: 260px;
-    border: 1px solid rgba(0,0,0,.12);
-    box-sizing: border-box;
-    background: rgba(0,0,0,0.05);
-    overflow-y: scroll;
+.vip-container {
+    border-top: 0 !important;
 }
-    .playerlist-container ul {
-        padding: 0;
-        margin: 0;
+    .vip-container .mdl-list {
+        overflow-y: scroll;
+        height: calc(100% - 65px - 45px);
+        box-sizing: content-box;
     }
-        .playlist-container ul li {
-            padding: 5px 10px;
-        }
-            .playlist-container ul li:hover {
-                background: rgba(0,0,0,0.05);
-                cursor: pointer;
-            }
+.vip-container h4 {
+    padding-top: 8px;
+    margin: 0;
+    text-align: center;
+    color: rgba(0,0,0,.54);
+    border: 1px solid rgba(0,0,0,.12);
+    border-top-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    box-sizing: border-box;
+    position: relative;
+    font-size: 20px;
+    line-height: 35px;
+    font-weight: 500;
+    padding-bottom: 4px;
+}
+.vip-add, .ban-add {
+    height: 46px;
+    padding-left: 15px;
+    box-sizing: border-box;
+    position: relative;
+    border-top: 1px solid rgba(0,0,0,.12);
+}
+.vip-add button, .ban-add button {
+    position: absolute;
+    right: 5px;
+    top: 2px;
+}
+.vip-add .mdl-textfield, .ban-add .mdl-textfield {
+    float: left;
+    width: 240px;
+    margin-top: 5px;
+}
+
+
+
+
+
 .right-container {
     float: left;
     height: 100%;
-    width: calc(100% - 1165px);
+    width: calc(100% - 1150px);
 }
+    .right-container .right-one, .right-container .right-two {
+        height: 50%;
+    }
+    .right-container .right-two {
+        padding: 3px 10px;
+    }
     .right-container h4 {
-        margin: 8px 0 0px;
+        padding-top: 8px;
         text-align: center;
         color: rgba(0,0,0,.54);
         border: 1px solid rgba(0,0,0,.12);
@@ -116,6 +206,7 @@
         font-size: 20px;
         line-height: 35px;
         font-weight: 500;
+        margin: 0;
         padding-bottom: 5px;
     }
         .right-container h4 i {
@@ -129,7 +220,7 @@
                 color: rgba(0,0,0,.28);
             }
 .log-container {
-    height: calc(50% - 41px);
+    height: calc(100% - 47px);
     width: 100%;
     border-bottom: 1px solid rgba(0,0,0,.12);
     -moz-box-sizing: border-box;
@@ -146,3 +237,20 @@
         .log-container .log .log-item {
             margin: 0;
         }
+.right-two .server-privacy, .right-two .server-biped, .right-two .server-max-players, .right-two .server-xdelay-timer {
+    width: 150px !important;
+}
+
+
+
+
+
+    .mdl-textfield--slim {
+        padding: 0 !important;
+    }
+.mdl-textfield--slim:not(.getmdl-select) .mdl-textfield__label {
+    top: 6px !important;
+}
+.mdl-textfield--slim:not(.getmdl-select) .mdl-textfield__label:after {
+    bottom: 0 !important;
+}

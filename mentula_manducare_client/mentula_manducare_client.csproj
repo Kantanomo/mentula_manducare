@@ -93,6 +93,7 @@
     <Content Include="Content\Images\warlock.png" />
     <Content Include="Content\Images\waterworks.png" />
     <Content Include="Content\Images\zanzibar.png" />
+    <Content Include="Content\Material-Select.css" />
     <Content Include="Content\mdl.css" />
     <Content Include="Content\mentula.css" />
     <Content Include="Default.html" />
@@ -103,6 +104,7 @@
     <Content Include="Scripts\jquery.signalR-2.4.1.js" />
     <Content Include="Scripts\jquery.signalR-2.4.1.min.js" />
     <Content Include="Scripts\Material-Better-Tooltip.js" />
+    <Content Include="Scripts\Material-Select.js" />
     <Content Include="Scripts\mdl.js" />
     <Content Include="Scripts\mentula-extra.js" />
     <Content Include="Scripts\mentula.js" />

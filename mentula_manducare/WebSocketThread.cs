@@ -23,7 +23,7 @@ namespace mentula_manducare
         {
             string url = "http://+:9922";
             //Start WebService
-            WebApp.Start(url);
+            WebApp.Start(url, Startup.Configuration);
             
             MainThread.WriteLine($"SignalR Server running on {url}");
             Users = new UserCollection();
@@ -34,9 +34,10 @@ namespace mentula_manducare
             }
         }
     }
-    class Startup
+
+    internal static class Startup
     {
-        public void Configuration(IAppBuilder app)
+        public static void Configuration(IAppBuilder app)
         {
             app.UseCors(CorsOptions.AllowAll);
             app.MapSignalR();

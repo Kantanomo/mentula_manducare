@@ -43,8 +43,8 @@ namespace mentula_manducare
             {
                 var watch = Stopwatch.StartNew();
 
-                //Eventually stuff will go here
-                //GameState check every 5 ticks
+                foreach (ServerContainer serverContainer in Servers)
+                    serverContainer.Tick();
 
                 Thread.Sleep(15);
                 watch.Stop();
@@ -52,6 +52,7 @@ namespace mentula_manducare
                 TickCount++;
                 if (TPS.Seconds >= 1)
                 {
+                    MainThread.WriteLine($"Current Server Thread Tickrate: {TickCount}");
                     //Going for 50-70 TPS
                     TickCount = 0;
                     TPS = TimeSpan.Zero;

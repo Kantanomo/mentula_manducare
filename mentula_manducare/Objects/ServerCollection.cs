@@ -26,6 +26,9 @@ namespace mentula_manducare.Objects
             }
         }
 
+        public int ValidCount =>
+            List.Cast<ServerContainer>().Select(x => x.Name != "").Count();
+
         public ServerContainer this[Guid guid] 
             => (ServerContainer) List.Cast<object>().SingleOrDefault(
                 o => guid == ((ServerContainer)o).WebGuid);

@@ -23,6 +23,9 @@ namespace mentula_manducare.App_Code
 
         public string CurrentToken =>
             Context.QueryString["connectionToken"];
+
+        private bool notifyLock = false;
+        private DateTime notifyStamp = DateTime.Now;
         public void LoginEvent(string Password)
         {
             try
@@ -126,7 +129,12 @@ namespace mentula_manducare.App_Code
                 a.Add("CurrentName", server.CurrentVariantName);
                 a.Add("NextMap", server.NextVariantMap);
                 a.Add("NextName", server.NextVariantName);
-                a.Add("ServerCount", ServerThread.Servers.Count.ToString()); //Hacked to pieces.
+                a.Add("Privacy", server.Privacy.ToString());
+                a.Add("ForcedBiped", server.ForcedBiped.ToString());
+                a.Add("LobbyRunning", server.LobbyRunning.ToString());
+                a.Add("XDelayTimer", server.ForcedXDelayTimer.ToString());
+                a.Add("MaxPlayers", server.MaxPlayers.ToString());
+                a.Add("ServerCount", ServerThread.Servers.ValidCount.ToString()); //Hacked to pieces.
                 CurrentUser.GetServerStatusEvent(JsonConvert.SerializeObject(a));
             }
         }
@@ -190,6 +198,57 @@ namespace mentula_manducare.App_Code
             }
         }
 
+        public void LoadVIPListEvent(string serverIndex)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                CurrentUser.LoadVIPListEvent(
+                    JsonConvert.SerializeObject(
+                        ServerThread.Servers[Guid.Parse(serverIndex)].GetVIPGamers)
+                );
+            }
+        }
+
+        public void AddVIPPlayerEvent(string serverIndex, string playerName)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} added {playerName} to VIP");
+                server.ConsoleProxy.AddVIP(playerName);
+                CurrentUser.AddVIPPlayerEvent("success");
+            }
+        }
+
+        public void RemoveVIPPlayerEvent(string serverIndex, string playerName)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} removed {playerName} from VIP");
+                server.ConsoleProxy.RemoveVIP(playerName);
+                CurrentUser.RemoveVIPPlayerEvent("Success");
+            }
+        }
         public void LoadPlaylistsEvent()
         {
             if (!WebSocketThread.Users.TokenLogin(CurrentToken).Result) return;
@@ -234,10 +293,95 @@ namespace mentula_manducare.App_Code
             }
         }
 
+        public void StopServerEvent(string serverIndex)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName,
+                    $"{TokenResult.UserObject.Username} stopped server {server.FormattedName}");
+                server.KillServer(false);
+                CurrentUser.StopServerEvent("Server has been stopped.");
+            }
+        }
+
+        public void RestartServerEvent(string serverIndex)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName,
+                    $"{TokenResult.UserObject.Username} restarted server {server.FormattedName}");
+                server.KillServer();
+                CurrentUser.RestartServerEvent("Server has been restarted.");
+            }
+        }
+
         public void NotifyServerChangeEvent()
         {
-            Clients.All.NotifyServerChangeEvent();
+            //Some logic to not spam a bunch of notify events to all clients
+            if (!notifyLock)
+            {
+                Clients.All.NotifyServerChangeEvent();
+                notifyStamp = DateTime.Now;
+                notifyLock = true;
+            }
+            else
+            {
+                if (notifyStamp.AddSeconds(10) < DateTime.Now)
+                {
+                    notifyLock = false;
+                    NotifyServerChangeEvent();
+                }
+            }
         }
+
+        public void FreezeLobbyEvent(string serverIndex, string state)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName,
+                    $"{TokenResult.UserObject.Username} Froze the Lobby.");
+                server.LobbyRunning = (state == "true");
+            }
+        }
+
+        public void ForceStartLobbyEvent(string serverIndex)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName,
+                    $"{TokenResult.UserObject.Username} Force stated the lobby.");
+                server.ForceStartLobby();
+            }
+        }
+
         public static void NotifyServerChangeEventEx()
         {
             GlobalHost.ConnectionManager.GetHubContext<ServerHub>().Clients.All.NotifyServerChangeEvent();
