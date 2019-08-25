@@ -8,7 +8,7 @@ namespace mentula_manducare.Enums
 {
     public enum Biped : byte
     {
-        Disabled = 99,
+        Disabled = 255,
         Master_Chief = 0,
         Arbiter = 1,
         Spartan = 2,

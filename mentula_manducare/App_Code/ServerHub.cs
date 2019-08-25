@@ -6,6 +6,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using mentula_manducare.Classes;
+using mentula_manducare.Enums;
 using mentula_manducare.Objects;
 using MentulaManducare;
 using Microsoft.AspNet.SignalR;
@@ -134,6 +135,7 @@ namespace mentula_manducare.App_Code
                 a.Add("LobbyRunning", server.LobbyRunning.ToString());
                 a.Add("XDelayTimer", server.ForcedXDelayTimer.ToString());
                 a.Add("MaxPlayers", server.MaxPlayers.ToString());
+                a.Add("BRFix", server.BattleRifleVelocityOverride.ToString());
                 a.Add("ServerCount", ServerThread.Servers.ValidCount.ToString()); //Hacked to pieces.
                 CurrentUser.GetServerStatusEvent(JsonConvert.SerializeObject(a));
             }
@@ -197,7 +199,21 @@ namespace mentula_manducare.App_Code
                 CurrentUser.UnBanPlayerEvent("Success");
             }
         }
-
+        public void TimeoutPlayerEvent(string serverIndex, string playerName)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} timed out player {playerName}");
+                server.CurrentPlayers[playerName]?.TimeoutPlayer();
+            }
+        }
         public void LoadVIPListEvent(string serverIndex)
         {
             var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
@@ -360,8 +376,9 @@ namespace mentula_manducare.App_Code
             else
             {
                 Logger.AppendToLog(server.LogName,
-                    $"{TokenResult.UserObject.Username} Froze the Lobby.");
-                server.LobbyRunning = (state == "true");
+                    $"{TokenResult.UserObject.Username} {((state == "true") ? "froze" : "unfroze")} the Lobby.");
+                server.LobbyRunning = state != "true";
+                MainThread.WriteLine(state);
             }
         }
 
@@ -382,6 +399,90 @@ namespace mentula_manducare.App_Code
             }
         }
 
+        public void SetPrivacyEvent(string serverIndex, string privacy)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                server.Privacy = (Privacy)Enum.Parse(typeof(Privacy), privacy);
+                server.SaveSettings();
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set privacy to {privacy}");
+            }
+        }
+
+        public void SetForcedBipedEvent(string serverIndex, string biped)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                server.ForcedBiped = (Biped)Enum.Parse(typeof(Biped), biped);
+                server.SaveSettings();
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set forced biped to {biped}");
+            }
+        }
+
+        public void SetMaxPlayersEvent(string serverIndex, string playerCount)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                server.MaxPlayers = int.Parse(playerCount);
+                server.SaveSettings();
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set max players to {playerCount}");
+            }
+        }
+
+        public void SetXDelayTimer(string serverIndex, string xDelayTime)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                server.ForcedXDelayTimer = int.Parse(xDelayTime);
+                server.SaveSettings();
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set xdelay to {xDelayTime}");
+            }
+        }
+
+        public void SetBRFixEvent(string serverIndex, string value)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                server.BattleRifleVelocityOverride = float.Parse(value);
+                server.SaveSettings();
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set BRFix to {value}");
+            }
+        }
         public static void NotifyServerChangeEventEx()
         {
             GlobalHost.ConnectionManager.GetHubContext<ServerHub>().Clients.All.NotifyServerChangeEvent();

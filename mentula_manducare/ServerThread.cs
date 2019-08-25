@@ -52,7 +52,7 @@ namespace mentula_manducare
                 TickCount++;
                 if (TPS.Seconds >= 1)
                 {
-                    MainThread.WriteLine($"Current Server Thread Tickrate: {TickCount}");
+                    //MainThread.WriteLine($"Current Server Thread Tickrate: {TickCount}");
                     //Going for 50-70 TPS
                     TickCount = 0;
                     TPS = TimeSpan.Zero;

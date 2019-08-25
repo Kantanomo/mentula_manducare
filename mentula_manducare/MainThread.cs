@@ -64,7 +64,8 @@ namespace MentulaManducare
             Task.Factory.StartNew(WebSocketThread.Run);
 
             Task.Factory.StartNew(ServerThread.Run);
-
+            var a = new SettingsCollection("MainSettings");
+            a.AddSetting("Test", "test");
 
 
             while (true)
@@ -196,6 +197,8 @@ namespace MentulaManducare
                     Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\");
                 if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Logs"))
                     Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Logs");
+                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Settings"))
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Settings");
                 return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\";
             }
         }

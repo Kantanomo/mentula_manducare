@@ -51,6 +51,7 @@ namespace mentula_manducare.Classes
 
         public void AppendLog(string logText)
         {
+            fileSteam.Seek(fileSteam.Length, SeekOrigin.Begin);
             streamWriter.WriteLine($"[{DateTime.Now.ToString()}]: {logText}");
             streamWriter.Flush();
         }

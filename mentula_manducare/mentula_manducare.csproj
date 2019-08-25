@@ -141,6 +141,7 @@
     <Compile Include="Objects\PlayerContainer.cs" />
     <Compile Include="Objects\ServerCollection.cs" />
     <Compile Include="Objects\ServerContainer.cs" />
+    <Compile Include="Objects\SettingsCollection.cs" />
     <Compile Include="Objects\User.cs" />
     <Compile Include="Objects\UserCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

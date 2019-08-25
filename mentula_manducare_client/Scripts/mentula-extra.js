@@ -5,7 +5,7 @@
         beavercreek: "Beaver Creek",
         burial_mounds: "Burial Mounds",
         coagulation: "Coagulation",
-        colosus: "Colosus",
+        colossus: "Colossus",
         containment: "Containment",
         cyclotron: "Ivory Tower",
         deltatap: "Sanctuary",

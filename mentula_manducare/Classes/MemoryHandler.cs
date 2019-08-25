@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MentulaManducare;
 
 namespace mentula_manducare.Classes
 {
@@ -131,7 +132,7 @@ namespace mentula_manducare.Classes
 
         public int Pointer(bool addToBase, params int[] pOffsets)
         {
-            var startPointer = ReadInt(processBase + pOffsets[0]);
+            var startPointer = ReadInt(pOffsets[0], true);
             for (var i = 1; i < pOffsets.Length; i++)
                 if (i == pOffsets.Length - 1)
                     startPointer += pOffsets[i];
@@ -140,6 +141,10 @@ namespace mentula_manducare.Classes
             return startPointer;
         }
 
+        public int BlamCachePointer(int cacheOffset)
+        {
+            return Pointer(true, 0x4A29BC, cacheOffset);
+        }
         #region Read Memory
 
         public byte ReadByte(int pOffset, bool addToBase = false) => 

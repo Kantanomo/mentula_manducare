@@ -80,7 +80,12 @@ namespace mentula_manducare.Classes
 
         public void Privacy(Privacy privacy)
         {
-            InputWriter.WriteLine($"privacy \"{privacy.ToString()}\"");
+            InputWriter.WriteLine($"privacy \"{privacy.ToString()}\"{Environment.NewLine}");
+        }
+
+        public void Players(int count)
+        {
+            InputWriter.WriteLine($"players {count.ToString()}{Environment.NewLine}");
         }
 
         public void AddVIP(string PlayerName)

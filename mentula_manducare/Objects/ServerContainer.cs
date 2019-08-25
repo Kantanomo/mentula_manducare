@@ -21,7 +21,7 @@ namespace mentula_manducare.Objects
         public Guid WebGuid { get; set; }
         public string Instance { get; set; }
         private string _Name = "";
-
+        private bool _xDelayFlop = false;
         public string Name
         {
             get
@@ -40,17 +40,22 @@ namespace mentula_manducare.Objects
         public bool AutoRestart = true;
         public string LogName =>
             Instance.Replace(':', '_');
+
+        public SettingsCollection Settings;
         public ServerContainer(Process serverProcess)
         {
             this.ServerProcess = serverProcess;
             ServerMemory = new MemoryHandler(ServerProcess);
             WebGuid = Guid.NewGuid(); //Used to handle the issues with server indexing with detaching/attaching instances.
             GetLaunchParameters(this);
+            Settings = new SettingsCollection(LogName);
         }
 
         public void LaunchConsoleProxy()
         {
             ConsoleProxy = new ConsoleProxy(this.Instance);
+            LoadSettings();
+
         }
 
         public void KillConsoleProxy()
@@ -71,19 +76,52 @@ namespace mentula_manducare.Objects
             {
                 case GameState.Lobby:
                 {
-                    if (ForceXDelay)
-                        XDelayTimer = ForcedXDelayTimer;
+                    if (!LobbyRunning)
+                    {
+                        RunCountdown =
+                            false; //If lobby is frozen keep canceling the count down and set delay timer to absurd value
+                        XDelayTimer = short.MaxValue;
+                        RunCountdown = true;
+                    }
+                    else
+                    {
+                        if (ForceXDelay & !_xDelayFlop & RunCountdown)
+                        {
+                            //Fire only after initial countdown starts, reset and change time.
+                            MainThread.WriteLine("Countdown has started", true);
+                            RunCountdown = false;
+                            XDelayTimer = ForcedXDelayTimer;
+                            RunCountdown = true;
+                            _xDelayFlop = true;
+                        }
+                        if (_xDelayFlop & !RunCountdown)
+                            _xDelayFlop = false;
+                    }
                     break;
                 }
                 case GameState.Starting:
                     break;
                 case GameState.InGame:
                 {
-                    //Biped Force
+                    //Because of dynamic player table issues instead of processing the whole player collection
+                    //just iterate through all possible options, It ain't perfect but it works.
+                    if (ForcedBiped != Biped.Disabled)
+                        for (var i = 0; i < 16; i++)
+                            ServerMemory.WriteByte(0x3000274C + (i * 0x204), (byte) ForcedBiped);
+                    //EVENTUALLY REMOVABLE
+                    if (DoBattleRifleVelocityOverride)
+                    {
+                        BattleRifleVelocity = BattleRifleVelocityOverride;
+                    }
+
                     break;
                 }
                 case GameState.PostGame:
+                {
+                    _xDelayFlop = false;
+
                     break;
+                }
                 case GameState.MatchMaking:
                     break;
                 case GameState.Unknown:
@@ -98,6 +136,23 @@ namespace mentula_manducare.Objects
             }
         }
 
+        public void SaveSettings()
+        {
+            Settings.AddSetting("XDelayTimer", ForcedXDelayTimer.ToString());
+            Settings.AddSetting("ForcedBiped", ForcedBiped.ToString());
+            Settings.AddSetting("Privacy", Privacy.ToString());
+            Settings.AddSetting("MaxPlayers", MaxPlayers.ToString());
+            Settings.AddSetting("BRFix", BattleRifleVelocityOverride.ToString());
+        }
+
+        public void LoadSettings()
+        {
+            XDelayTimer = int.Parse(Settings.GetSetting("XDelayTimer", ForcedXDelayTimer.ToString()));
+            ForcedBiped = (Biped)Enum.Parse(typeof(Biped), Settings.GetSetting("ForcedBiped", ForcedBiped.ToString()));
+            Privacy = (Privacy) Enum.Parse(typeof(Privacy), Settings.GetSetting("Privacy", Privacy.ToString()));
+            MaxPlayers = int.Parse(Settings.GetSetting("MaxPlayers", MaxPlayers.ToString()));
+            BattleRifleVelocityOverride = float.Parse(Settings.GetSetting("BRFix", BattleRifleVelocityOverride.ToString()));
+        }
         public string FormattedName =>
             $"{Index} - {Name}:{Instance}";
         [ScriptIgnore]
@@ -122,8 +177,10 @@ namespace mentula_manducare.Objects
             }
         }
 
-        public int MaxPlayers =>
-            ServerMemory.ReadByte(0x534858, true);
+        public int MaxPlayers {
+            get => ServerMemory.ReadByte(0x534858, true);
+            set => ConsoleProxy.Players(value);
+        }
 
         public string RegistryPath =>
             $"SYSTEM\\ControlSet001\\Services\\{ServiceName}\\";
@@ -152,8 +209,17 @@ namespace mentula_manducare.Objects
         public string NextVariantName =>
             ServerMemory.ReadStringUnicode(0x4506C4 + (NextVariantIndex * 0x21C), 200, true);
 
-        public Privacy Privacy =>
-            (Privacy) ServerMemory.ReadByte(0x534850, true);
+        public Privacy Privacy
+        {
+            get => (Privacy) ServerMemory.ReadByte(0x534850, true);
+            set
+            {
+                if(value == Enums.Privacy.Closed)
+                    ServerMemory.WriteByte(0x534850, (byte) Privacy.Closed, true);
+                else
+                    ConsoleProxy.Privacy(value);
+            }
+        }
 
         public List<string> GetBannedGamers =>
             Registry.LocalMachine.OpenSubKey(BanRegistry)?.GetValueNames().ToList();
@@ -171,8 +237,8 @@ namespace mentula_manducare.Objects
         //Look at these dirty whores below
         public int XDelayTimer
         {
-            get => ServerMemory.ReadInt(0x53484C, true);
-            set => ServerMemory.WriteInt(0x53484C, value, true);
+            get => ServerMemory.ReadInt(0x534870, true);
+            set => ServerMemory.WriteInt(0x534870, value, true);
         }
 
         public bool RunCountdown
@@ -181,20 +247,26 @@ namespace mentula_manducare.Objects
             set => ServerMemory.WriteBool(0x53486C, value, true);
         }
 
-        public bool LobbyRunning
-        {
-            get => ServerMemory.ReadBool(0x53484C, true);
-            set => ServerMemory.WriteBool(0x53484C, !value, true);
-        }
+        public bool LobbyRunning = true;
         
 
         public void ForceStartLobby()
         {
-            var tLobby = LobbyRunning;
-            LobbyRunning = !tLobby;
             RunCountdown = true;
             XDelayTimer = 0;
-            LobbyRunning = tLobby;
+        }
+
+        //All of this Battle rifle shit will eventually be removable.
+        public bool DoBattleRifleVelocityOverride => BattleRifleVelocityOverride != 1200f;
+        public float BattleRifleVelocityOverride = 1200f;
+
+        public float BattleRifleVelocity
+        {
+            set
+            {
+                ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0xA4EC88), value);
+                ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0xA4EC8C), value);
+            }
         }
 
         /* ================================ *

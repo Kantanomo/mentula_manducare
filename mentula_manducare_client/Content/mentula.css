@@ -144,6 +144,12 @@
         height: calc(100% - 65px - 45px);
         box-sizing: content-box;
     }
+.vip-container .mdl-list__item-secondary-action {
+    color: rgba(0,0,0,.54);
+}
+.vip-container .mdl-list__item-secondary-action:hover { 
+    color: red; 
+}
 .vip-container h4 {
     padding-top: 8px;
     margin: 0;
@@ -237,7 +243,7 @@
         .log-container .log .log-item {
             margin: 0;
         }
-.right-two .server-privacy, .right-two .server-biped, .right-two .server-max-players, .right-two .server-xdelay-timer {
+.right-two .server-privacy, .right-two .server-biped, .right-two .server-max-players, .right-two .server-xdelay-timer, .right-two .server-br-fix {
     width: 150px !important;
 }
 

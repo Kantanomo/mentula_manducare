@@ -126,7 +126,7 @@
         </div>
         <div class="vip-container">
             <h4 class="mdl-typography--display-1">VIP List <i class="material-icons">refresh</i></h4>
-            <div class="vip mdl-list">
+            <div class="viplist mdl-list">
 
             </div>
             <div class="vip-add">
@@ -155,9 +155,9 @@
                     Privacy
                 </label>
                 <ul>
-                    <li class="mdl-menu__item">Open</li>
-                    <li class="mdl-menu__item">VIP</li>
-                    <li class="mdl-menu__item">Closed</li>
+                    <li class="mdl-menu__item" data-value="Open">Open</li>
+                    <li class="mdl-menu__item" data-value="VIP">VIP</li>
+                    <li class="mdl-menu__item" data-value="Closed">Closed</li>
                 </ul>
             </div>
             <div class="server-biped mdl-select mdl-js-select mdl-textfield mdl-js-textfield mdl-textfield--floating-label" data-type="simple" data-width="150">
@@ -166,10 +166,10 @@
                     Forced Biped
                 </label>
                 <ul>
-                    <li class="mdl-menu__item">None</li>
-                    <li class="mdl-menu__item">SP Spartan</li>
-                    <li class="mdl-menu__item">MP Spartan</li>
-                    <li class="mdl-menu__item">Elite</li>
+                    <li class="mdl-menu__item" data-value="Disabled">None</li>
+                    <li class="mdl-menu__item" data-value="Master_Chief">SP Spartan</li>
+                    <li class="mdl-menu__item" data-value="Spartan">MP Spartan</li>
+                    <li class="mdl-menu__item" data-value="Elite">Elite</li>
                 </ul>
             </div>
             <div class="server-max-players mdl-select mdl-js-select mdl-textfield mdl-js-textfield mdl-textfield--floating-label" data-type="simple" data-width="150">
@@ -201,7 +201,11 @@
                 <label class="mdl-textfield__label" for="server_xdely_timer">XDelay Timer</label>
                 <span class="mdl-textfield__error">Invalid Input</span>
             </div>
-
+            <div class="server-br-fix mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" value="400" type="text" pattern="^\d+$" id="server_br_fix">
+                <label class="mdl-textfield__label" for="server_xdely_timer">Battle Rifle Velocity</label>
+                <span class="mdl-textfield__error">Invalid Input</span>
+            </div>
         </div>
     </div>
 </template>

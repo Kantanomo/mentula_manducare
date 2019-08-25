@@ -2564,6 +2564,19 @@
     };
     MaterialSwitch.prototype['off'] = MaterialSwitch.prototype.off;
     /**
+       * Set wether or not the element should be on or off
+       *
+       * @public
+       */
+  
+    MaterialSwitch.prototype.setState = function(state) {
+        if (state)
+            this.on();
+        else
+            this.off();
+    }
+    MaterialSwitch.prototype['setState'] = MaterialSwitch.prototype.setState;
+    /**
        * Initialize element.
        */
     MaterialSwitch.prototype.init = function () {

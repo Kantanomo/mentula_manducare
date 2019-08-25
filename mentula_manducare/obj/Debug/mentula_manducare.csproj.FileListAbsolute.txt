@@ -1,4 +1,3 @@
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Debug\mentula_manducare.csproj.CoreCompileInputs.cache
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\mentula_manducare.exe.config
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\mentula_manducare.exe
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\mentula_manducare.pdb
@@ -24,6 +23,7 @@ C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\Mi
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\Microsoft.Owin.Hosting.xml
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\Microsoft.Owin.Security.xml
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Debug\mentula_manducare.csproj.CoreCompileInputs.cache
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Debug\mentula_manducare.csproj.CopyComplete
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Debug\mentula_manducare.exe
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Debug\mentula_manducare.pdb

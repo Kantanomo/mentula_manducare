@@ -9,7 +9,7 @@ MaterialSelect.prototype.cssClasses_ = {
     IS_DISABLED: "is-disabled"
 };
 MaterialSelect.prototype.menuItemOnClick = function (item) {
-    var value = item.dataset["value"];
+    var value = item.dataset["value"] || item.textContent;
     var text = item.textContent.trim();
     if (text !== this.input_.value || this.input_.dataset["value"] === undefined) {
         this.element_.MaterialTextfield.change(text);
@@ -20,6 +20,7 @@ MaterialSelect.prototype.menuItemOnClick = function (item) {
             event.initEvent("change", !1, !0);
             this.MaterialMenu.hide();
             this.element_.dispatchEvent(event);
+            this.input_.dispatchEvent(event);
         }
     }
 };
@@ -78,6 +79,17 @@ MaterialSelect.prototype.addMenuItem = function (value, text, hide) {
         this.MaterialMenu.init();
         this.MaterialMenu.show();
     }
+}
+MaterialSelect.prototype.setSelectedItem = function (value) {
+    var _this = this;
+    var a = _this.MaterialMenu.element_.querySelectorAll('li');
+    for (var i = 0; i < a.length; i++) {
+        if (a[i].dataset["value"] === value || value === a[i].textContent)
+            _this.menuItemOnClick(a[i]);
+    }
+}
+MaterialSelect.prototype.selectedItem = function () {
+    return this.input_.value;
 }
 MaterialSelect.prototype.init = function () {
     var _this = this;

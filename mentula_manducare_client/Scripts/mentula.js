@@ -110,7 +110,7 @@ Mentula.prototype.initEvents = function () {
         _this.RemoveVIPPlayerCallback(result);
     }
     window.setInterval(function () {
-        _this.updateCurrentTab();
+        _this.updateCurrentState();
     }, 5000);
 };
 
@@ -148,7 +148,7 @@ Mentula.prototype.InitNewServerTab = function (server) {
     //Hook the stop button
     var stopButton = newTabElm.querySelector('.mentula-stop');
     stopButton.addEventListener('click',
-        function() {
+        function () {
             _this.StopServerEvent();
         });
 
@@ -208,8 +208,8 @@ Mentula.prototype.InitNewServerTab = function (server) {
     var serverPrivacy = newTabElm.querySelector('.server-privacy input');
     serverPrivacy.id = `${server.Index}-privacy`;
     newTabElm.querySelector('.server-privacy label').setAttribute('for', `${server.Index}-privacy`);
-    serverPrivacy.addEventListener('change', function() {
-        //Do Stuff here.
+    serverPrivacy.addEventListener('change', function () {
+        _this.SetPrivacyEvent(this.dataset["value"]);
     });
 
     //Hook the Server forced biped
@@ -217,7 +217,7 @@ Mentula.prototype.InitNewServerTab = function (server) {
     serverBiped.id = `${server.Index}-biped`;
     newTabElm.querySelector('.server-biped label').setAttribute('for', `${server.Index}-biped`);
     serverBiped.addEventListener('change', function() {
-        //Do Stuff here.
+        _this.SetForcedBipedEvent(this.dataset["value"]);
     });
 
     //Hook the Server max Players
@@ -225,7 +225,7 @@ Mentula.prototype.InitNewServerTab = function (server) {
     serverMaxPlayers.id = `${server.Index}-max-players`;
     newTabElm.querySelector('.server-max-players label').setAttribute('for', `${server.Index}-max-players`);
     serverMaxPlayers.addEventListener('change', function() {
-        //Do Stuff here.
+        _this.SetMaxPlayersEvent(this.dataset["value"]);
     });
 
     //Hook the Xdelay Timer
@@ -234,17 +234,26 @@ Mentula.prototype.InitNewServerTab = function (server) {
     newTabElm.querySelector('.server-xdelay-timer label').setAttribute('for', `${server.Index}-xdelay-timer`);
     serverXDelay.addEventListener('change', function () {
         if (this.validity.valid) {
-            //Do Stuff here
+            _this.SetXDelayTimer(this.value);
         }
-            
+    });
+
+    //Hook the gay ass battle rifle shit that actually does nothing.
+    var serverBattleRifle = newTabElm.querySelector('.server-br-fix input');
+    serverBattleRifle.id = `${server.Index}-br-fix`;
+    newTabElm.querySelector('.server-br-fix label').setAttribute('for', `${server.Index}-br-fix`);
+    serverBattleRifle.addEventListener('change', function () {
+        if (this.validity.valid) {
+            _this.SetBRFixEvent(this.value);
+        }
     });
 
     //Hook the freeze lobby
     var serverFreeze = newTabElm.querySelector('.server-freeze-lobby input');
     serverFreeze.id = `${server.Index}-freeze-lobby`;
     newTabElm.querySelector('.server-freeze-lobby').setAttribute('for', `${server.Index}-freeze-lobby`);
-    serverFreeze.addEventListener('change', function() {
-        _this.FreezeLobbyEvent(this.checked.toString());
+    serverFreeze.addEventListener('change', function () {
+            _this.FreezeLobbyEvent(this.checked.toString());
     });
 
     //Hook the Force Start Game
@@ -254,7 +263,6 @@ Mentula.prototype.InitNewServerTab = function (server) {
         _this.ForceStartLobbyEvent();
     });
 
-
     componentHandler.upgradeElements(newTabElm);
     //document.querySelectorAll('.mdl-textfield').forEach(function (a) { componentHandler.upgradeElement(a) });
 }
@@ -263,17 +271,19 @@ Mentula.prototype.InitNewServerTab = function (server) {
  *       FUNCTIONS        *
  **************************/
 
+Mentula.prototype.updateCurrentState = function(){
+    if (this.currentTab !== undefined) {
+        this.serverConnection.server.getCurrentPlayersEvent(this.currentServer);
+        this.serverConnection.server.getServerStatusEvent(this.currentServer);
+    }
+}
 
 Mentula.prototype.LoginEvent = function (Password) {
     this.serverConnection.server.loginEvent(Password);
 }
 
-Mentula.prototype.updateCurrentTab = function () {
-    this.tabChangedEvent(this.currentTab, true);
-}
-
 Mentula.prototype.KickPlayerEvent = function (PlayerName) {
-    this.serverConnection.server.kickPlayerEvent(this.currentTab.dataset["index"], PlayerName);
+    this.serverConnection.server.kickPlayerEvent(this.currentServer, PlayerName);
 }
 
 Mentula.prototype.tabChangedEvent = function (tabElement, force) {
@@ -291,23 +301,28 @@ Mentula.prototype.tabChangedEvent = function (tabElement, force) {
         });
         tabElement.tabContent.classList.add('is-active');
         this.currentTab = tabElement;
-        var serverIndex = tabElement.dataset["index"];
-        this.serverConnection.server.getCurrentPlayersEvent(serverIndex);
-        this.serverConnection.server.getServerStatusEvent(serverIndex);
-        this.serverConnection.server.loadPlaylistsEvent();
+        this.currentServer = tabElement.dataset["index"];
+        this.LoadPlaylistsEvent();
+        this.LoadBanListEvent();
+        this.LoadVIPListEvent();
+        this.LoadServerLogEvent();
     }
 }
 
 Mentula.prototype.LoadBanListEvent = function() {
-    this.serverConnection.server.loadBanListEvent(this.currentTab.dataset["index"]);
+    this.serverConnection.server.loadBanListEvent(this.currentServer);
 }
 
 Mentula.prototype.UnBanPlayerEvent = function(PlayerName) {
-    this.serverConnection.server.unBanPlayerEvent(this.currentTab.dataset["index"], PlayerName);
+    this.serverConnection.server.unBanPlayerEvent(this.currentServer, PlayerName);
 }
 
 Mentula.prototype.BanPlayerEvent = function(PlayerName) {
-    this.serverConnection.server.banPlayerEvent(this.currentTab.dataset["index"], PlayerName);
+    this.serverConnection.server.banPlayerEvent(this.currentServer, PlayerName);
+}
+
+Mentula.prototype.TimeoutPlayerEvent = function(PlayerName) {
+    this.serverConnection.server.timeoutPlayerEvent(this.currentServer, PlayerName);
 }
 
 Mentula.prototype.LoadPlaylistsEvent = function() {
@@ -315,18 +330,18 @@ Mentula.prototype.LoadPlaylistsEvent = function() {
 }
 
 Mentula.prototype.ChangePlaylistEvent = function(PlayList) {
-    this.serverConnection.server.changePlaylistEvent(this.currentTab.dataset["index"], PlayList);
+    this.serverConnection.server.changePlaylistEvent(this.currentServer, PlayList);
 }
 
 Mentula.prototype.LoadServerLogEvent = function() {
-    this.serverConnection.server.loadServerLogEvent(this.currentTab.dataset["index"]);
+    this.serverConnection.server.loadServerLogEvent(this.currentServer);
 }
 
 Mentula.prototype.RestartServerEvent = function() {
     if (confirm(
         "ARE YOU SURE YOU WANT TO DO THIS, THIS WILL RESTART THE SERVICE. THIS ACTION WILL BE LOGGED")
     ) {
-        this.serverConnection.server.restartServerEvent(this.currentTab.dataset["index"]);
+        this.serverConnection.server.restartServerEvent(this.currentServer);
     }
 }
 
@@ -334,30 +349,49 @@ Mentula.prototype.StopServerEvent = function() {
     if (confirm(
         "ARE YOU SURE YOU WANT TO DO THIS, IF YOU CLICK OKAY THE SERVER OWNER WILL HAVE TO MANUALLY START THE SERVICE. THIS ACTION WILL BE LOGGED")
     ) {
-        this.serverConnection.server.stopServerEvent(this.currentTab.dataset["index"]);
+        this.serverConnection.server.stopServerEvent(this.currentServer);
     }
 }
 
 Mentula.prototype.LoadVIPListEvent = function() {
-    this.serverConnection.server.loadVIPListEvent(this.currentTab.dataset["index"]);
+    this.serverConnection.server.loadVIPListEvent(this.currentServer);
 }
 
 Mentula.prototype.AddVIPPlayerEvent = function(playerName) {
-    this.serverConnection.server.addVIPPlayerEvent(this.currentTab.dataset["index"], playerName);
+    this.serverConnection.server.addVIPPlayerEvent(this.currentServer, playerName);
 }
 
 Mentula.prototype.RemoveVIPPlayerEvent = function(playerName) {
-    this.serverConnection.server.removeVIPPlayerEvent(this.currentTab.dataset["index"], playerName);
+    this.serverConnection.server.removeVIPPlayerEvent(this.currentServer, playerName);
 }
 
 Mentula.prototype.FreezeLobbyEvent = function(state) {
-    this.serverConnection.server.freezeLobbyEvent(this.currentTab.dataset["index"], state);
+    this.serverConnection.server.freezeLobbyEvent(this.currentServer, state);
 }
 
 Mentula.prototype.ForceStartLobbyEvent = function() {
-    this.serverConnection.server.forceStartLobbyEvent(this.currentTab.dataset["index"]);
+    this.serverConnection.server.forceStartLobbyEvent(this.currentServer);
 }
 
+Mentula.prototype.SetPrivacyEvent = function(privacy) {
+    this.serverConnection.server.setPrivacyEvent(this.currentServer, privacy);
+}
+
+Mentula.prototype.SetForcedBipedEvent = function(biped) {
+    this.serverConnection.server.setForcedBipedEvent(this.currentServer, biped);
+}
+
+Mentula.prototype.SetMaxPlayersEvent = function(playerCount) {
+    this.serverConnection.server.setMaxPlayersEvent(this.currentServer, playerCount);
+}
+
+Mentula.prototype.SetXDelayTimer = function(xDelayTime) {
+    this.serverConnection.server.setXDelayTimer(this.currentServer, xDelayTime);
+}
+
+Mentula.prototype.SetBRFixEvent = function(value) {
+    this.serverConnection.server.setBRFixEvent(this.currentServer, value);
+}
 /**************************
  *       CALL BACKS       *
  **************************/
@@ -406,6 +440,21 @@ Mentula.prototype.GetServerStatusCallback = function (result) {
         //Display next variant
         tabContent.querySelector('[data-elm="nextvariant"]').innerText =
             `${status["NextName"]} on ${this.extra.localizeMapName(status["NextMap"])}`;
+
+        if (tabContent.querySelector('.server-freeze-lobby input').checked !== (status["LobbyRunning"] !== "true")) {
+            tabContent.querySelector('.server-freeze-lobby').MaterialSwitch
+                .setState(status["LobbyRunning"] !== "True");
+        }
+        if (tabContent.querySelector('.server-privacy').MaterialSelect.selectedItem() !== status["Privacy"])
+            tabContent.querySelector('.server-privacy').MaterialSelect.setSelectedItem(status["Privacy"]);
+        if (tabContent.querySelector('.server-biped').MaterialSelect.selectedItem() !== status["ForcedBiped"])
+            tabContent.querySelector('.server-biped').MaterialSelect.setSelectedItem(status["ForcedBiped"]);
+        if (tabContent.querySelector('.server-max-players').MaterialSelect.selectedItem() !== status["MaxPlayers"])
+            tabContent.querySelector('.server-max-players').MaterialSelect.setSelectedItem(status["MaxPlayers"]);
+        if (tabContent.querySelector('.server-xdelay-timer input').value !== status["XDelayTimer"])
+            tabContent.querySelector('.server-xdelay-timer').MaterialTextfield.change(status["XDelayTimer"]);
+        if (tabContent.querySelector('.server-br-fix input').value !== status["BRFix"])
+            tabContent.querySelector('.server-br-fix').MaterialTextfield.change(status["BRFix"]);
     }
 }
 
@@ -433,6 +482,10 @@ Mentula.prototype.GetPlayerListCallback = function (result) {
             newRow.querySelectorAll('.material-icons')[1].addEventListener('click',
                 function() {
                     _this.KickPlayerEvent(player["Name"]);
+                });
+            newRow.querySelectorAll('.material-icons')[2].addEventListener('click',
+                function() {
+                    _this.TimeoutPlayerEvent(player["Name"]);
                 });
             playerTable.append(newRow);
         } else {
