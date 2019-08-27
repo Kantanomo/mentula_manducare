@@ -53,4 +53,3 @@ C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\R
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.csproj.CopyComplete
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.dll
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.pdb
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.csprojAssemblyReference.cache
