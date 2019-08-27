@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Management;
 using System.Text;
@@ -33,11 +34,11 @@ namespace mentula_manducare.Objects
         }
 
         public bool isLive { get; set; }
-        public string Description { get; set; } //Add proper handling for setting description
         public Process ServerProcess { get; set; }
         public MemoryHandler ServerMemory { get; set; }
         public ConsoleProxy ConsoleProxy { get; set; }
         public bool AutoRestart = true;
+        public int AFKKicktime = 0;
         public string LogName =>
             Instance.Replace(':', '_');
 
@@ -55,7 +56,7 @@ namespace mentula_manducare.Objects
         {
             ConsoleProxy = new ConsoleProxy(this.Instance);
             LoadSettings();
-
+            CurrentPlayers = new PlayerCollection(this);
         }
 
         public void KillConsoleProxy()
@@ -88,7 +89,6 @@ namespace mentula_manducare.Objects
                         if (ForceXDelay & !_xDelayFlop & RunCountdown)
                         {
                             //Fire only after initial countdown starts, reset and change time.
-                            MainThread.WriteLine("Countdown has started", true);
                             RunCountdown = false;
                             XDelayTimer = ForcedXDelayTimer;
                             RunCountdown = true;
@@ -110,9 +110,34 @@ namespace mentula_manducare.Objects
                             ServerMemory.WriteByte(0x3000274C + (i * 0x204), (byte) ForcedBiped);
                     //EVENTUALLY REMOVABLE
                     if (DoBattleRifleVelocityOverride)
-                    {
                         BattleRifleVelocity = BattleRifleVelocityOverride;
-                    }
+
+                    if(AFKKicktime != 0)
+                        foreach (PlayerContainer playerContainer in CurrentPlayers)
+                        {
+                            playerContainer.TickAFKCheck();
+                            if (playerContainer.HasMoved)
+                            {
+                                playerContainer.HasMoved = false;
+                                ConsoleProxy.SendMessage(
+                                    $"{playerContainer.Name} that was a close one.");
+                                }
+                            if (DateTime.Now - playerContainer.LastMovement > TimeSpan.FromSeconds(AFKKicktime * 0.8) &&
+                                !playerContainer.IsWarned)
+                            {
+                                playerContainer.IsWarned = true;
+                                    ConsoleProxy.SendMessage(
+                                        $"{playerContainer.Name} you are about to be kicked for being AFK you should move.");
+
+                            }
+                            if (DateTime.Now - playerContainer.LastMovement > TimeSpan.FromSeconds(AFKKicktime) &&
+                                !playerContainer.isAFK)
+                            {
+                                playerContainer.isAFK = true;
+                                ConsoleProxy.SendMessage($"{playerContainer.Name} was kicked for being AFK.");
+                                ConsoleProxy.KickPlayer(playerContainer.Name);
+                            }
+                        }
 
                     break;
                 }
@@ -143,6 +168,8 @@ namespace mentula_manducare.Objects
             Settings.AddSetting("Privacy", Privacy.ToString());
             Settings.AddSetting("MaxPlayers", MaxPlayers.ToString());
             Settings.AddSetting("BRFix", BattleRifleVelocityOverride.ToString());
+            Settings.AddSetting("Description", FormattedDescription);
+            Settings.AddSetting("AFKTimer", AFKKicktime.ToString());
         }
 
         public void LoadSettings()
@@ -152,12 +179,13 @@ namespace mentula_manducare.Objects
             Privacy = (Privacy) Enum.Parse(typeof(Privacy), Settings.GetSetting("Privacy", Privacy.ToString()));
             MaxPlayers = int.Parse(Settings.GetSetting("MaxPlayers", MaxPlayers.ToString()));
             BattleRifleVelocityOverride = float.Parse(Settings.GetSetting("BRFix", BattleRifleVelocityOverride.ToString()));
+            Description = Settings.GetSetting("Description", "");
+            AFKKicktime = int.Parse(Settings.GetSetting("AFKTimer", "0"));
         }
         public string FormattedName =>
             $"{Index} - {Name}:{Instance}";
-        [ScriptIgnore]
-        public PlayerCollection CurrentPlayers =>
-            new PlayerCollection(this);
+
+        [ScriptIgnore] public PlayerCollection CurrentPlayers;
 
         public GameState GameState =>
             (GameState) ServerMemory.ReadByte(0x3C40AC, true);
@@ -269,6 +297,34 @@ namespace mentula_manducare.Objects
             }
         }
 
+
+        private byte[] description_;
+        public string FormattedDescription { get; set; }
+        public string Description
+        {
+            get { return Encoding.Unicode.GetString(description_); }
+            set
+            {
+                FormattedDescription = value;
+                var bytes = new List<byte>();
+                var strings = ServerContainer.SymbolsSpecifier.Split(value);
+                var charArray = new[] { '[', ']' };
+                foreach (var string_ in strings)
+                {
+                    if (SymbolsSpecifier.Match(string_).Success)
+                    {
+                        bytes.Add(byte.Parse(string_.Trim(charArray).Substring(0, 2), NumberStyles.AllowHexSpecifier));
+                        bytes.Add(byte.Parse(string_.Trim(charArray).Substring(2, 2), NumberStyles.AllowHexSpecifier));
+                    }
+                    else
+                        bytes.AddRange(Encoding.Unicode.GetBytes(string_));
+                }
+                bytes.Add(00);
+                bytes.Add(00);
+                description_ = bytes.ToArray();
+                ServerMemory.WriteMemory(true, 0x5347F8, bytes.ToArray());
+            }
+        }
         /* ================================ *
          *  Static Properties and methods   *
          * ================================ */
@@ -276,6 +332,7 @@ namespace mentula_manducare.Objects
 
         public static Regex ServerInstanceMatch = new Regex(@"-instance:[(\d|\w)]+");
         public static Regex ServerLiveMatch = new Regex(@"-live+");
+        public static Regex SymbolsSpecifier = new Regex("(\\[(?:[0-9A-Fa-f]{4}|0-9A-Fa-f]{6})\\])");
         public static void GetLaunchParameters(ServerContainer container)
         {
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT CommandLine FROM Win32_Process WHERE ProcessId = " + container.ServerProcess.Id))

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using mentula_manducare.Objects;
 using MentulaManducare;
 using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Client;
 using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.Owin.Cors;
 using Microsoft.Owin.Hosting;
@@ -19,19 +20,24 @@ namespace mentula_manducare
     public static class WebSocketThread
     {
         public static UserCollection Users;
+        public static IDisposable SignalRDisposable = null;
         public static void Run()
         {
-            string url = "http://+:9922";
-            //Start WebService
-            WebApp.Start(url, Startup.Configuration);
-            
-            MainThread.WriteLine($"SignalR Server running on {url}");
+            StartWebApp();
             Users = new UserCollection();
             while (true)
             {
                 //Any Background tasks go here
-                Thread.Sleep(60000);
+                //Thread.Sleep(60000);
             }
+        }
+
+        public static void StartWebApp()
+        {
+            SignalRDisposable?.Dispose();
+            string url = "http://+:9922";
+            SignalRDisposable = WebApp.Start(url, Startup.Configuration);
+            MainThread.WriteLine($"SignalR Server running on {url}");
         }
     }
 
@@ -39,9 +45,13 @@ namespace mentula_manducare
     {
         public static void Configuration(IAppBuilder app)
         {
+            var hubConfiguration = new HubConfiguration();
+            hubConfiguration.EnableDetailedErrors = false;
             app.UseCors(CorsOptions.AllowAll);
-            app.MapSignalR();
-            
+            app.MapSignalR("/signalr", hubConfiguration);
+            GlobalHost.Configuration.ConnectionTimeout = TimeSpan.FromSeconds(60);
+            GlobalHost.Configuration.DisconnectTimeout = TimeSpan.FromSeconds(60);
+            GlobalHost.Configuration.KeepAlive = TimeSpan.FromSeconds((int)Math.Floor(60F/3F));
         }
     }
    

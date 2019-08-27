@@ -27,6 +27,46 @@ namespace mentula_manducare.App_Code
 
         private bool notifyLock = false;
         private DateTime notifyStamp = DateTime.Now;
+
+        public override Task OnConnected()
+        {
+            MainThread.WriteLine("Websocket Connection Created");
+            try
+            {
+                return base.OnConnected();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            MainThread.WriteLine("Websocket Connection Disconnected");
+            try
+            {
+                return base.OnDisconnected(stopCalled);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public override Task OnReconnected()
+        {
+            MainThread.WriteLine("Websocket Connection Disconnected");
+            try
+            {
+                return base.OnReconnected();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public void LoginEvent(string Password)
         {
             try
@@ -111,7 +151,23 @@ namespace mentula_manducare.App_Code
                 CurrentUser.KickPlayerEvent("Success");
             }
         }
+        public void SetDescriptionEvent(string serverIndex, string description)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} changed server description to {description}");
+                server.Description = description;    
+                server.SaveSettings();
 
+            }
+        }
         public void GetServerStatusEvent(string serverIndex)
         {
             if (!WebSocketThread.Users.TokenLogin(CurrentToken).Result) return;
@@ -136,6 +192,8 @@ namespace mentula_manducare.App_Code
                 a.Add("XDelayTimer", server.ForcedXDelayTimer.ToString());
                 a.Add("MaxPlayers", server.MaxPlayers.ToString());
                 a.Add("BRFix", server.BattleRifleVelocityOverride.ToString());
+                a.Add("Description", server.FormattedDescription);
+                a.Add("AFKTimer", server.AFKKicktime.ToString());
                 a.Add("ServerCount", ServerThread.Servers.ValidCount.ToString()); //Hacked to pieces.
                 CurrentUser.GetServerStatusEvent(JsonConvert.SerializeObject(a));
             }
@@ -157,7 +215,22 @@ namespace mentula_manducare.App_Code
                 CurrentUser.SkipServerEvent("Success");
             }
         }
-
+        public void SetAFKTimerEvent(string serverIndex, string value)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} change the AFK Kick Timer to {value}");
+                server.AFKKicktime = int.Parse(value);
+                server.SaveSettings();
+            }
+        }
         public void LoadBanListEvent(string serverIndex)
         {
             if (!WebSocketThread.Users.TokenLogin(CurrentToken).Result) return;
