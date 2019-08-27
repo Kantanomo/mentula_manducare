@@ -49,8 +49,8 @@ C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\bin\r
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\bin\roslyn\VBCSCompiler.exe.config
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.csprojAssemblyReference.cache
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.csproj.CoreCompileInputs.cache
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.csproj.CopyComplete
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.dll
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.pdb
+C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare_client\obj\Release\mentula_manducare_client.csprojAssemblyReference.cache

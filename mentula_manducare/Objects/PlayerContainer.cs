@@ -15,13 +15,22 @@ namespace mentula_manducare.Objects
         public MemoryHandler Memory;
 
         public int PlayerIndex;
-        private int resolvedStaticIndex;
-        private int resolvedDynamicIndex;
+        private int resolvedStaticIndex = -1;
+        private int resolvedDynamicIndex = -1;
+
         public PlayerContainer(MemoryHandler Memory, int PlayerIndex)
         {
             this.Memory = Memory;
             this.PlayerIndex = PlayerIndex;
+            resolveIndexes();
+        }
+        public bool IsReal => Name != "";
+
+        public void resolveIndexes()
+        {
             var name_ = this.Name;
+            this.resolvedStaticIndex = -1;
+            this.resolvedDynamicIndex = -1;
             for (var i = 0; i < 16; i++)
             {
                 if (Memory.ReadStringUnicode(0x530E4C + (i * 0x128), 16, true) == name_)
@@ -30,7 +39,6 @@ namespace mentula_manducare.Objects
                     resolvedDynamicIndex = i;
             }
         }
-
         public string Name
         {
             get => Memory.ReadStringUnicode(0x9917DA + (PlayerIndex * 0x40), 16, true);
@@ -72,6 +80,45 @@ namespace mentula_manducare.Objects
 
         public string EmblemURL =>
             $"http://halo.bungie.net/Stats/emblem.ashx?s=120&0={BipedPrimaryColor.ToString()}&1={BipedSecondaryColor.ToString()}&2={PrimaryEmblemColor.ToString()}&3={SecondaryEmblemColor.ToString()}&fi={EmblemForeground.ToString()}&bi={EmblemBackground.ToString()}&fl={EmblemToggle.ToString()}";
+
+        public float CameraYaw =>
+            Memory.ReadFloat(0x53F3A0 + (PlayerIndex * 0x88), true);
+
+        public float CameraPitch =>
+            Memory.ReadFloat(0x53F3A4 + (PlayerIndex * 0x88), true);
+
+        public DateTime LastMovement;
+        public bool IsWarned = false;
+        public bool isAFK = false;
+        public bool HasMoved = false;
+        private float LastCameraYaw = 0;
+        private float LastCameraPitch = 0;
+        public void TickAFKCheck()
+        {
+            if (LastCameraPitch == 0 && LastCameraYaw == 0)
+            {
+                LastMovement = DateTime.Now;
+                LastCameraPitch = CameraPitch;
+                LastCameraYaw = CameraYaw;
+            }
+            else
+            {
+                if (LastCameraPitch != CameraPitch || LastCameraYaw != CameraYaw)
+                {
+                    LastMovement = DateTime.Now;
+                    LastCameraPitch = CameraPitch;
+                    LastCameraYaw = CameraYaw;
+                    if (IsWarned)
+                        HasMoved = true;
+                    isAFK = false;
+                    IsWarned = false;
+                }
+            }
+        }
+
+
+
+        //Requires more testing, might delete later idk
 
         public int NetworkIdentifier =>
             Memory.ReadByte(0x530E3C + (resolvedStaticIndex * 0x128), true) - 1;

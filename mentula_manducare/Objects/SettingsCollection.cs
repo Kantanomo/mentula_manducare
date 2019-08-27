@@ -82,6 +82,7 @@ namespace mentula_manducare.Objects
         private void Save()
         {
             writer.BaseStream.Position = 0;
+            settingsFile.SetLength(0);
             var Settings = List.Cast<KeyValuePair<string, string>>().ToList();
             writer.Write(JsonConvert.SerializeObject(Settings));
             writer.Flush();
