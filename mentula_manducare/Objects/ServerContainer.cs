@@ -128,7 +128,6 @@ namespace mentula_manducare.Objects
                                 playerContainer.IsWarned = true;
                                     ConsoleProxy.SendMessage(
                                         $"{playerContainer.Name} you are about to be kicked for being AFK you should move.");
-
                             }
                             if (DateTime.Now - playerContainer.LastMovement > TimeSpan.FromSeconds(AFKKicktime) &&
                                 !playerContainer.isAFK)
