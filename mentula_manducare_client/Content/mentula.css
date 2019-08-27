@@ -7,11 +7,12 @@
     width: 100%;
     -height: calc(100% - 112px);
 }
-.status-card {
-    float: left;
-    height: 100%;
-    border-right: 1px solid rgba(0,0,0,.12);
-}
+    .status-card {
+        float: left;
+        height: 100%;
+        border-right: 1px solid rgba(0, 0, 0, .12);
+    }
+
     .status-card .mdl-card__title {
         height: 256px;
         -background: url(https://vignette.wikia.nocookie.net/halo/images/f/fe/Lockout546.jpg/revision/latest?cb=20110501022546);
@@ -19,65 +20,73 @@
         filter: contrast(1.4) saturate(1.2);
         flex-grow: 0 !important;
     }
-        .status-card .mdl-card__title .mdl-card__title-text {
-            background: rgba(0,0,0,0.5);
-            padding: 5px;
-            filter: contrast(1) !important;
-            color: white;
-        }
+
+    .status-card .mdl-card__title .mdl-card__title-text {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px;
+        filter: contrast(1) !important;
+        max-width: 270px;
+        color: white;
+    }
+
     .status-card .mdl-card__supporting-text {
         height: 250px;
         position: relative;
     }
 
-.server_lobby_control_container {
-    float: left;
-    bottom: 10px;
-    position: absolute;
-}
-.server_lobby_control_container .mdl-switch {
-    float: left;
-    width: auto;
-    margin-top: 5px;
-}
-.server_lobby_control_container .mdl-button {
-    float: left;
-    margin-left: 27px;
-}
-
-.playlist-container {
-    height: 260px;
-    border: 1px solid rgba(0,0,0,.12);
-    box-sizing: border-box;
-    background: rgba(0,0,0,0.05);
-    overflow-y: scroll;
-}
-.playerlist-container ul {
-    padding: 0;
-    margin: 0;
-}
-.playlist-container ul li {
-    padding: 5px 10px;
-}
-.playlist-container ul li:hover {
-    background: rgba(0,0,0,0.05);
-    cursor: pointer;
-}
-.playerlist-container {
-    height: 100%;
-    width: 525px;
-    float: left;
-    border-right: 1px solid rgba(0,0,0,.12);
-    box-sizing: border-box;
-}
-.player-table {
-    width: 100%;
-    border-right: 0 !important;
-    border-left: 0 !important;
-}
-    .player-table td, .player-table tr {
-        height: 47px !important;
+    .server_lobby_control_container {
+        float: left;
+        bottom: 10px;
+        position: absolute;
     }
+
+    .server_lobby_control_container .mdl-switch {
+        float: left;
+        width: auto;
+        margin-top: 5px;
+    }
+
+    .server_lobby_control_container .mdl-button {
+        float: left;
+        margin-left: 27px;
+    }
+
+    .playlist-container {
+        height: 260px;
+        border: 1px solid rgba(0, 0, 0, .12);
+        box-sizing: border-box;
+        background: rgba(0, 0, 0, 0.05);
+        overflow-y: scroll;
+    }
+
+    .playerlist-container ul {
+        padding: 0;
+        margin: 0;
+    }
+
+    .playlist-container ul li { padding: 5px 10px; }
+
+    .playlist-container ul li:hover {
+        background: rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+    }
+
+    .playerlist-container {
+        height: 100%;
+        width: 525px;
+        float: left;
+        border-right: 1px solid rgba(0, 0, 0, .12);
+        box-sizing: border-box;
+    }
+
+    .player-table {
+        width: 100%;
+        border-right: 0 !important;
+        border-left: 0 !important;
+    }
+
+    .player-table td, .player-table tr { height: 47px !important; }
+
     .player-table .player-emblem {
         background-size: 60px !important;
         background-repeat: no-repeat !important;
@@ -88,22 +97,24 @@
 
 
 
-.middle-container {
-    float: left;
-    height: 100%;
-    width: 310px;
-}
-.banlist-container, .vip-container {
-    height: 50%;
-    width: 100%;
-    border: 1px solid rgba(0,0,0,.12);
-    border-left: none;
-}
+    .middle-container {
+        float: left;
+        height: 100%;
+        width: 310px;
+    }
+
+    .banlist-container, .vip-container {
+        height: 50%;
+        width: 100%;
+        border: 1px solid rgba(0, 0, 0, .12);
+        border-left: none;
+    }
+
     .banlist-container h4 {
         margin: 8px 0 0px;
         text-align: center;
-        color: rgba(0,0,0,.54);
-        border: 1px solid rgba(0,0,0,.12);
+        color: rgba(0, 0, 0, .54);
+        border: 1px solid rgba(0, 0, 0, .12);
         border-top-width: 0;
         border-left-width: 0;
         border-right-width: 0;
@@ -114,96 +125,94 @@
         font-weight: 500;
         padding-bottom: 4px;
     }
-        .banlist-container h4 i, .vip-container h4 i {
-            position: absolute;
-            right: 6px;
-            top: 5px;
-            font-size: 30px;
-            cursor: pointer;
-        }
-            .banlist-container h4 i:hover, .vip-container h4 i:hover {
-                color: rgba(0,0,0,.28);
-            }
+
+    .banlist-container h4 i, .vip-container h4 i {
+        position: absolute;
+        right: 6px;
+        top: 5px;
+        font-size: 30px;
+        cursor: pointer;
+    }
+
+    .banlist-container h4 i:hover, .vip-container h4 i:hover { color: rgba(0, 0, 0, .28); }
+
     .banlist-container .mdl-list {
         overflow-y: scroll;
         height: calc(100% - 65px - 45px);
         box-sizing: content-box;
     }
-.banlist .mdl-list__item-secondary-action {
-         color: rgba(0,0,0,.54);
-     }
-.banlist .mdl-list__item-secondary-action:hover { 
-    color: red; 
-}
 
-.vip-container {
-    border-top: 0 !important;
-}
+    .banlist .mdl-list__item-secondary-action { color: rgba(0, 0, 0, .54); }
+
+    .banlist .mdl-list__item-secondary-action:hover { color: red; }
+
+    .vip-container { border-top: 0 !important; }
+
     .vip-container .mdl-list {
         overflow-y: scroll;
         height: calc(100% - 65px - 45px);
         box-sizing: content-box;
     }
-.vip-container .mdl-list__item-secondary-action {
-    color: rgba(0,0,0,.54);
-}
-.vip-container .mdl-list__item-secondary-action:hover { 
-    color: red; 
-}
-.vip-container h4 {
-    padding-top: 8px;
-    margin: 0;
-    text-align: center;
-    color: rgba(0,0,0,.54);
-    border: 1px solid rgba(0,0,0,.12);
-    border-top-width: 0;
-    border-left-width: 0;
-    border-right-width: 0;
-    box-sizing: border-box;
-    position: relative;
-    font-size: 20px;
-    line-height: 35px;
-    font-weight: 500;
-    padding-bottom: 4px;
-}
-.vip-add, .ban-add {
-    height: 46px;
-    padding-left: 15px;
-    box-sizing: border-box;
-    position: relative;
-    border-top: 1px solid rgba(0,0,0,.12);
-}
-.vip-add button, .ban-add button {
-    position: absolute;
-    right: 5px;
-    top: 2px;
-}
-.vip-add .mdl-textfield, .ban-add .mdl-textfield {
-    float: left;
-    width: 240px;
-    margin-top: 5px;
-}
 
+    .vip-container .mdl-list__item-secondary-action { color: rgba(0, 0, 0, .54); }
 
+    .vip-container .mdl-list__item-secondary-action:hover { color: red; }
 
-
-
-.right-container {
-    float: left;
-    height: 100%;
-    width: calc(100% - 1150px);
-}
-    .right-container .right-one, .right-container .right-two {
-        height: 50%;
+    .vip-container h4 {
+        padding-top: 8px;
+        margin: 0;
+        text-align: center;
+        color: rgba(0, 0, 0, .54);
+        border: 1px solid rgba(0, 0, 0, .12);
+        border-top-width: 0;
+        border-left-width: 0;
+        border-right-width: 0;
+        box-sizing: border-box;
+        position: relative;
+        font-size: 20px;
+        line-height: 35px;
+        font-weight: 500;
+        padding-bottom: 4px;
     }
-    .right-container .right-two {
-        padding: 3px 10px;
+
+    .vip-add, .ban-add {
+        height: 46px;
+        padding-left: 15px;
+        box-sizing: border-box;
+        position: relative;
+        border-top: 1px solid rgba(0, 0, 0, .12);
     }
+
+    .vip-add button, .ban-add button {
+        position: absolute;
+        right: 5px;
+        top: 2px;
+    }
+
+    .vip-add .mdl-textfield, .ban-add .mdl-textfield {
+        float: left;
+        width: 240px;
+        margin-top: 5px;
+    }
+
+
+
+
+
+    .right-container {
+        float: left;
+        height: 100%;
+        width: calc(100% - 1150px);
+    }
+
+    .right-container .right-one, .right-container .right-two { height: 50%; }
+
+
     .right-container h4 {
         padding-top: 8px;
         text-align: center;
-        color: rgba(0,0,0,.54);
-        border: 1px solid rgba(0,0,0,.12);
+        color: rgba(0, 0, 0, .54);
+        border: 1px solid rgba(0, 0, 0, .12);
         border-top-width: 0;
         border-left-width: 0;
         border-right-width: 0;
@@ -215,48 +224,72 @@
         margin: 0;
         padding-bottom: 5px;
     }
-        .right-container h4 i {
-            position: absolute;
-            right: 6px;
-            top: 5px;
-            font-size: 30px;
-            cursor: pointer;
-        }
-            .right-container h4 i:hover {
-                color: rgba(0,0,0,.28);
-            }
-.log-container {
-    height: calc(100% - 47px);
-    width: 100%;
-    border-bottom: 1px solid rgba(0,0,0,.12);
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: 15px;
+
+    .right-container h4 i {
+        position: absolute;
+        right: 6px;
+        top: 5px;
+        font-size: 30px;
+        cursor: pointer;
+    }
+.right-two .mdl-tabs__tab-bar {
+    height: 49px !important;
 }
-    .log-container .log {
-        border: 1px solid rgba(0,0,0,.12);
+    .right-two .mdl-tabs__tab-bar .mdl-tabs__tab {
+        height: 49px !important;
+    }
+.right-two .mdl-tabs .mdl-tabs__panel {
+    padding: 5px;
+}
+.right-container h4 i:hover {
+    color: rgba(0, 0, 0, .28);
+}
+
+    .log-container {
+        height: calc(100% - 47px);
+        width: 100%;
+        border-bottom: 1px solid rgba(0, 0, 0, .12);
+        -moz-box-sizing: border-box;
         box-sizing: border-box;
-        background: rgba(0,0,0,0.05);
+        padding: 15px;
+    }
+
+    .log-container .log {
+        border: 1px solid rgba(0, 0, 0, .12);
+        box-sizing: border-box;
+        background: rgba(0, 0, 0, 0.05);
         overflow-y: scroll;
         height: 100%;
-    }   
-        .log-container .log .log-item {
-            margin: 0;
-        }
-.right-two .server-privacy, .right-two .server-biped, .right-two .server-max-players, .right-two .server-xdelay-timer, .right-two .server-br-fix {
-    width: 150px !important;
-}
-
-
-
-
-
-    .mdl-textfield--slim {
-        padding: 0 !important;
     }
-.mdl-textfield--slim:not(.getmdl-select) .mdl-textfield__label {
-    top: 6px !important;
+
+    .log-container .log .log-item { margin: 0; }
+
+.right-two .server-privacy, .right-two .server-biped, .right-two .server-max-players, .right-two .server-xdelay-timer, .right-two .server-br-fix, .right-two .server-afk-timer {
+    width: 145px !important;
 }
-.mdl-textfield--slim:not(.getmdl-select) .mdl-textfield__label:after {
-    bottom: 0 !important;
+
+
+
+.mdl-textfield {
+    outline: none !important;
 }
+
+    .mdl-textfield--slim { padding: 0 !important; }
+
+    .mdl-textfield--slim:not(.getmdl-select) .mdl-textfield__label { top: 6px !important; }
+
+    .mdl-textfield--slim:not(.getmdl-select) .mdl-textfield__label:after { bottom: 0 !important; }
+    
+
+    #hexValuesDialog .mdl-dialog__content {
+        height: 500px;
+        overflow-y: scroll;
+    }
+
+.enableDark {
+    position: absolute;
+    right: 20px;
+}
+    .enableDark.is-checked .mdl-icon-toggle__label {
+        color: rgb(243, 229, 33) !important;
+    }

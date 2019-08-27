@@ -96,6 +96,7 @@
     <Reference Include="System.IO.Compression">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Management">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
@@ -131,6 +132,8 @@
     <Compile Include="Classes\ConsoleProxy.cs" />
     <Compile Include="Classes\Logger.cs" />
     <Compile Include="Classes\MemoryHandler.cs" />
+    <Compile Include="Classes\Update.cs" />
+    <Compile Include="ConsoleInputThread.cs" />
     <Compile Include="Enums\Biped.cs" />
     <Compile Include="Enums\GameState.cs" />
     <Compile Include="Enums\PlayerTeam.cs" />

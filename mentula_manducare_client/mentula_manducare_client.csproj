@@ -95,6 +95,7 @@
     <Content Include="Content\Images\zanzibar.png" />
     <Content Include="Content\Material-Select.css" />
     <Content Include="Content\mdl.css" />
+    <Content Include="Content\mdldark.css" />
     <Content Include="Content\mentula.css" />
     <Content Include="Default.html" />
     <None Include="Scripts\jquery-1.6.4-vsdoc.js" />

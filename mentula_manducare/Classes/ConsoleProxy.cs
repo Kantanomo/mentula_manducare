@@ -68,6 +68,10 @@ namespace mentula_manducare.Classes
             InputWriter.WriteLine($"unban gamer \"{PlayerName}{Environment.NewLine}");
         }
 
+        public void SendMessage(string Message)
+        {
+            InputWriter.WriteLine($"sendmsg \"{Message}{Environment.NewLine}");
+        }
         public void Skip()
         {
             InputWriter.WriteLine($"skip{Environment.NewLine}");

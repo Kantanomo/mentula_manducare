@@ -20,15 +20,41 @@ namespace MentulaManducare
         private static int InputTop = 0;
         private static int InputLeft = 0;
         private static bool yes = true;
+        const uint ENABLE_QUICK_EDIT = 0x0040;
+        public static Update Updater = new Update();
+        public static DateTime UpdateInterval = DateTime.Now;
+        
+        // STD_INPUT_HANDLE (DWORD): -10 is the standard input device.
+        const int STD_INPUT_HANDLE = -10;
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr GetStdHandle(int nStdHandle);
+
+        [DllImport("kernel32.dll")]
+        static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+
+        [DllImport("kernel32.dll")]
+        static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+
         public static string[] MutableErrors = new []
         {
             "Microsoft.AspNet.SignalR.Hubs.ConnectionIdProxy",
             "HKLM\\Software\\Microsoft\\Fusion!EnableLog",
             "Could not load file or assembly 'mscorlib.XmlSerializers",
-            "The requested Performance Counter is not a custom counter"
+            "The requested Performance Counter is not a custom counter",
+            ".Load"
         };
         static void Main(string[] args)
         {
+        //Gotta love new Features that probably break absolutely everything made in the past
+        //https://stackoverflow.com/questions/13656846/how-to-programmatic-disable-c-sharp-console-applications-quick-edit-mode/36720802#36720802
+            IntPtr consoleHandle = GetStdHandle(STD_INPUT_HANDLE);
+            uint consoleMode;
+            GetConsoleMode(consoleHandle, out consoleMode);
+            consoleMode &= ~ENABLE_QUICK_EDIT;
+            SetConsoleMode(consoleHandle, consoleMode);
+
+
             #region Fuck Liberals
             WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "MMMMMMMM               MMMMMMMM               AAA                  GGGGGGGGGGGGG               AAA               "));
             WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M:::::::M             M:::::::M              A:::A              GGG::::::::::::G              A:::A              "));
@@ -49,32 +75,44 @@ namespace MentulaManducare
             #endregion
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
             {
-#if DEBUG
+
                 if (!MutableErrors.Any(eventArgs.Exception.ToString().Contains))
                 {
+                    //if(eventArgs.Exception.ToString().Contains("SignalR"))
+                    //  WebSocketThread.StartWebApp();
+#if DEBUG
                     WriteLine(
                         $"An exception has occured within the application please check the error log in {Logger.LogBase}",
                         true);
+#endif
                     Logger.AppendToLog("ErrorLog", eventArgs.Exception.ToString());
                 }
-#endif
+
             };
             yes = false;
+
+#if !DEBUG
+            Updater.CheckUpdates();
+#endif
+            Console.Title = $"Mentula Manducare {Updater.CurrentVersion}";
             //Start new thread for actual processing.
             Task.Factory.StartNew(WebSocketThread.Run);
 
             Task.Factory.StartNew(ServerThread.Run);
-            var a = new SettingsCollection("MainSettings");
-            a.AddSetting("Test", "test");
 
+            Task.Factory.StartNew(ConsoleInputThread.Run);
+           
 
             while (true)
             {
-                var input = Console.ReadLine();
-                WriteLine($"Command: {input}", true);
-                ExecuteCommand(input);
+#if !DEBUG
+                if (DateTime.Now - UpdateInterval > TimeSpan.FromMinutes(10))
+                {
+                    Updater.CheckUpdates();
+                    UpdateInterval = DateTime.Now;
+                }
+#endif
             }
-
         }
 
         public static void WriteLine(object Input, bool isInput = false)
@@ -97,98 +135,7 @@ namespace MentulaManducare
             //Console.SetCursorPosition(InputLeft, InputTop);
         }
 
-        public static void ExecuteCommand(string input)
-        {
-            string Command = input.Split(' ').First();
-            List<string> Params = input.Split(' ').ToList();
-            Params.RemoveAt(0);
-            switch (Command.ToLower())
-            {
-                case "adduser":
-                {
-                    if (Params.Count != 2)
-                        WriteLine("Incorrect amount of parameters provided, please provide a username and password",
-                            true);
-                    else
-                    {
-                        WebSocketThread.Users.Add(Params[0], Params[1]);
-                        WriteLine($"User {Params[0]} added", true);
-                    }
-
-                    break;
-                }
-                case "removeuser":
-                {
-                    if (Params.Count != 1)
-                        WriteLine("Incorrect amount of parameters provided, please provide a username", true);
-                    else
-                    {
-                        WebSocketThread.Users.Remove(Params[0]);
-                        WriteLine($"User {Params[0]} Removed", true);
-                    }
-
-                    break;
-                }
-                case "listuser":
-                {
-                    WriteLine("Users:", true);
-                    WebSocketThread.Users.AsList.ForEach((user => { WriteLine(user.Username, true); }));
-                    break;
-                }
-                case "resetuser":
-                {
-                    WriteLine(
-                        WebSocketThread.Users.ResetPassword(Params[0], Params[1])
-                            ? $"Password reset for {Params[0]}"
-                            : "Invalid username",
-                        true);
-                    break;
-                }
-                case "listserver":
-                {
-                    WriteLine($"==Listing {ServerThread.Servers.Count} Servers==", true);
-                    foreach (ServerContainer server in ServerThread.Servers)
-                    {
-                        WriteLine($"Index: {server.FormattedName}", true);
-                    }
-                    break;
-                }
-                case "stopserver":
-                {
-                    if (int.Parse(Params[0]) <= ServerThread.Servers.Count)
-                    {
-                        WriteLine($"Stopping Server {Params[0]}, Service will have to be restarted manually", true);
-                        ServerThread.Servers[int.Parse(Params[0])].KillServer(false);
-                    }
-                    else
-                    {
-                        WriteLine($"Invalid Server Index given.");
-                    }
-
-                    break;
-                }
-                case "restartserver":
-                {
-                    if (int.Parse(Params[0]) <= ServerThread.Servers.Count)
-                    {
-                        WriteLine($"Restarting Server {Params[0]}....", true);
-                        ServerThread.Servers[int.Parse(Params[0])].KillServer();
-                    }
-                    else
-                    {
-                        WriteLine($"Invalid Server Index given.");
-                    }
-                    break;
-                }
-
-            default:
-                {
-                    WriteLine("Invalid Command", true);
-                    break;
-                }
-            }
-        }
-
+      
         public static string BasePath
         {
             get
@@ -199,6 +146,8 @@ namespace MentulaManducare
                     Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Logs");
                 if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Settings"))
                     Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Settings");
+                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Update"))
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Update");
                 return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\";
             }
         }
