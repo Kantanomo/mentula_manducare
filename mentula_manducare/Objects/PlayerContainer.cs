@@ -17,14 +17,15 @@ namespace mentula_manducare.Objects
         public int PlayerIndex;
         private int resolvedStaticIndex = -1;
         private int resolvedDynamicIndex = -1;
-
+        public string validName;
         public PlayerContainer(MemoryHandler Memory, int PlayerIndex)
         {
             this.Memory = Memory;
             this.PlayerIndex = PlayerIndex;
             resolveIndexes();
+            validName = Name;
         }
-        public bool IsReal => Name != "";
+        public bool IsReal => Name != "" && validName == Name;
 
         public void resolveIndexes()
         {
@@ -88,10 +89,10 @@ namespace mentula_manducare.Objects
             $"http://halo.bungie.net/Stats/emblem.ashx?s=120&0={BipedPrimaryColor.ToString()}&1={BipedSecondaryColor.ToString()}&2={PrimaryEmblemColor.ToString()}&3={SecondaryEmblemColor.ToString()}&fi={EmblemForeground.ToString()}&bi={EmblemBackground.ToString()}&fl={EmblemToggle.ToString()}";
 
         public float CameraYaw =>
-            Memory.ReadFloat(0x53F3A0 + (PlayerIndex * 0x88), true);
+            Memory.ReadFloat(0x53F3A0 + (resolvedStaticIndex * 0x88), true);
 
         public float CameraPitch =>
-            Memory.ReadFloat(0x53F3A4 + (PlayerIndex * 0x88), true);
+            Memory.ReadFloat(0x53F3A4 + (resolvedStaticIndex * 0x88), true);
 
         public DateTime LastMovement;
         public bool IsWarned = false;

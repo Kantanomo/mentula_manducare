@@ -23,7 +23,10 @@ namespace mentula_manducare.Objects
                 if (!p.IsReal)
                     List.RemoveAt(index);
                 else
+                {
+
                     p.resolveIndexes();
+                }
             }
 
             for (var i = 0; i < Server.PlayerCount; i++)

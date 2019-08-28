@@ -119,6 +119,8 @@ namespace mentula_manducare.Objects
                             if (playerContainer.HasMoved)
                             {
                                 playerContainer.HasMoved = false;
+                                playerContainer.IsWarned = false;
+                                playerContainer.isAFK = false;
                                 ConsoleProxy.SendMessage(
                                     $"{playerContainer.Name} that was a close one.");
                                 }
