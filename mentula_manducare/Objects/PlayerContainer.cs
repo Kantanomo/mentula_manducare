@@ -29,14 +29,15 @@ namespace mentula_manducare.Objects
         public void resolveIndexes()
         {
             var name_ = this.Name;
-            this.resolvedStaticIndex = -1;
-            this.resolvedDynamicIndex = -1;
-            for (var i = 0; i < 16; i++)
+            if (name_ != StaticName || name_ != DynamicName)
             {
-                if (Memory.ReadStringUnicode(0x530E4C + (i * 0x128), 16, true) == name_)
-                    resolvedStaticIndex = i;
-                if (Memory.ReadStringUnicode(0x30002708 + (i * 0x204), 16) == name_)
-                    resolvedDynamicIndex = i;
+                for (var i = 0; i < 16; i++)
+                {
+                    if (Memory.ReadStringUnicode(0x530E4C + (i * 0x128), 16, true) == name_)
+                        resolvedStaticIndex = i;
+                    if (Memory.ReadStringUnicode(0x30002708 + (i * 0x204), 16) == name_)
+                        resolvedDynamicIndex = i;
+                }
             }
         }
         public string Name
@@ -45,6 +46,11 @@ namespace mentula_manducare.Objects
             set => Memory.WriteStringUnicode(0x9917DA + (PlayerIndex * 0x40), value, true);
         }
 
+        public string StaticName 
+            => Memory.ReadStringUnicode(0x530E4C + (resolvedStaticIndex * 0x128), 16, true);
+
+        public string DynamicName
+            => "";
         public Team Team
         {
             get => (Team)Memory.ReadByte(0x530F4C + (resolvedStaticIndex * 0x128), true);

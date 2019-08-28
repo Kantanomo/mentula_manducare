@@ -112,6 +112,7 @@ namespace MentulaManducare
                     UpdateInterval = DateTime.Now;
                 }
 #endif
+                Thread.Sleep(60000);
             }
         }
 

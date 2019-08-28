@@ -1,4 +1,8 @@
-﻿.mdl-layout__content {
+﻿.mdl-layout__container {
+    min-width: 1675px !important;
+    min-height: 979px !important;
+}
+.mdl-layout__content {
     display: flex !important;
     overflow-y: hidden !important;
 }
@@ -11,6 +15,7 @@
         float: left;
         height: 100%;
         border-right: 1px solid rgba(0, 0, 0, .12);
+        max-width: 313px;
     }
 
     .status-card .mdl-card__title {
