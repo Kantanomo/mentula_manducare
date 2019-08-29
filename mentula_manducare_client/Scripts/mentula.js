@@ -177,7 +177,7 @@ Mentula.prototype.InitNewServerTab = function (server) {
             _this.LoadVIPListEvent();
         });
     //Hook server log refresh button
-    newTabElm.controls.logrefresh = newTabElm.querySelectorAll('.right-container h4 i')[0];
+    newTabElm.controls.logrefresh = newTabElm.querySelector('.right-container .right-one .server-refresh');
     newTabElm.controls.logrefresh.addEventListener('click',
         function() {
             _this.LoadServerLogEvent();
@@ -645,6 +645,7 @@ Mentula.prototype.LoadServerLogCallback = function(result) {
         newRow.className = "log-item";
         logElement.append(newRow);
     });
+    logElement.scrollTop = logElement.scrollHeight;
 }
 
 Mentula.prototype.StopServerCallback = function(result) {

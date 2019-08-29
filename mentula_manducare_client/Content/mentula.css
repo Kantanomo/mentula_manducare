@@ -251,9 +251,8 @@
 }
 
     .log-container {
-        height: calc(100% - 47px);
+        height: 100%;
         width: 100%;
-        border-bottom: 1px solid rgba(0, 0, 0, .12);
         -moz-box-sizing: border-box;
         box-sizing: border-box;
         padding: 15px;
@@ -298,3 +297,33 @@
     .enableDark.is-checked .mdl-icon-toggle__label {
         color: rgb(243, 229, 33) !important;
     }
+    
+.right-one .mdl-tabs {
+    height: 100%;
+}
+.right-one .mdl-tabs__panel {
+    height: calc(100% - 47px);
+    position: relative;
+    border-bottom: 1px solid rgba(0, 0, 0, .12);
+    box-sizing: border-box;
+}
+
+.messages-container {
+    height: calc(100% - 45px);
+    border-bottom: 1px solid rgba(0, 0, 0, .12);
+    box-sizing: border-box;
+}
+    .messages-container .mdl-list {
+        padding: 0;
+        margin: 0;
+    }
+
+
+.server-refresh {
+    position: absolute;
+    top: 5px;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: unset !important;
+    left: 5px;
+}
