@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -94,7 +95,8 @@ namespace mentula_manducare.Objects
         public float CameraPitch =>
             Memory.ReadFloat(0x53F3A4 + (resolvedStaticIndex * 0x88), true);
 
-        public DateTime LastMovement;
+        public Stopwatch LastMovement;
+        private bool AFKInit = false;
         public bool IsWarned = false;
         public bool isAFK = false;
         public bool HasMoved = false;
@@ -102,9 +104,10 @@ namespace mentula_manducare.Objects
         private float LastCameraPitch = 0;
         public void TickAFKCheck()
         {
-            if (LastCameraPitch == 0 && LastCameraYaw == 0)
+            if (!AFKInit)
             {
-                LastMovement = DateTime.Now;
+                AFKInit = true;
+                LastMovement = Stopwatch.StartNew();
                 LastCameraPitch = CameraPitch;
                 LastCameraYaw = CameraYaw;
             }
@@ -112,7 +115,7 @@ namespace mentula_manducare.Objects
             {
                 if (LastCameraPitch != CameraPitch || LastCameraYaw != CameraYaw)
                 {
-                    LastMovement = DateTime.Now;
+                    LastMovement.Restart();
                     LastCameraPitch = CameraPitch;
                     LastCameraYaw = CameraYaw;
                     if (IsWarned)
@@ -142,7 +145,7 @@ namespace mentula_manducare.Objects
                     var networkObjectIP = Memory.ReadInt(0x526574 + (i * 0x740), true);
                     if (networkObjectIP != IPHex) continue;
                     var startTime = DateTime.UtcNow;
-                    while(DateTime.Now - startTime < TimeSpan.FromSeconds(20))
+                    while(DateTime.Now - startTime > TimeSpan.FromSeconds(20))
                         Memory.WriteByte(0x5265CE + (i * 0x740), 0, true);
                     break;
                 }

@@ -38,7 +38,17 @@ namespace mentula_manducare.Objects
         public MemoryHandler ServerMemory { get; set; }
         public ConsoleProxy ConsoleProxy { get; set; }
         public bool AutoRestart = true;
-        public int AFKKicktime = 0;
+        private int AFKKicktime_ = 0;
+        private int AFKWarntime_ = 0;
+        public int AFKKicktime
+        {
+            get => AFKKicktime_;
+            set
+            {
+                AFKKicktime_ = value * 1000;
+                AFKWarntime_ = (int)Math.Floor(value * (decimal)0.8) * 1000;
+            }
+        }
         public string LogName =>
             Instance.Replace(':', '_');
 
@@ -124,14 +134,14 @@ namespace mentula_manducare.Objects
                                 ConsoleProxy.SendMessage(
                                     $"{playerContainer.Name} that was a close one.");
                                 }
-                            if (DateTime.Now - playerContainer.LastMovement > TimeSpan.FromSeconds(AFKKicktime * 0.8) &&
+                            if (playerContainer.LastMovement.ElapsedMilliseconds >  AFKWarntime_ &&
                                 !playerContainer.IsWarned)
                             {
                                 playerContainer.IsWarned = true;
                                     ConsoleProxy.SendMessage(
                                         $"{playerContainer.Name} you are about to be kicked for being AFK you should move.");
                             }
-                            if (DateTime.Now - playerContainer.LastMovement > TimeSpan.FromSeconds(AFKKicktime) &&
+                            if (playerContainer.LastMovement.ElapsedMilliseconds > AFKKicktime_ &&
                                 !playerContainer.isAFK)
                             {
                                 playerContainer.isAFK = true;

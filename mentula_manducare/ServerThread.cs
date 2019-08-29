@@ -37,23 +37,23 @@ namespace mentula_manducare
         public static void Run()
         {
 
-
+            var watch = Stopwatch.StartNew();
             DetectServers(true);
             while (true)
             {
-                var watch = Stopwatch.StartNew();
+                
 
                 foreach (ServerContainer serverContainer in Servers)
                     serverContainer.Tick();
 
-                Thread.Sleep(15);
-                watch.Stop();
+                Thread.Sleep(30);
+                
                 TPS = TPS.Add(watch.Elapsed);
+                watch.Restart();
                 TickCount++;
                 if (TPS.Seconds >= 1)
                 {
                     //MainThread.WriteLine($"Current Server Thread Tickrate: {TickCount}");
-                    //Going for 50-70 TPS
                     TickCount = 0;
                     TPS = TimeSpan.Zero;
                     DetectServers();
