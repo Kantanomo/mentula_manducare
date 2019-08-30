@@ -301,9 +301,51 @@
         </div>
         <div class="right-container">
             <div class="right-one">
-                <h4 class="mdl-typography--display-1">Server Log <i class="material-icons">refresh</i></h4>
-                <div class="log-container">
-                    <div class="log">
+                <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                        <a href="#server-log" class="mdl-tabs__tab is-active">Server Logs</a>
+                        <a href="#server-messages" class="mdl-tabs__tab">Server Messages</a>
+                    </div>
+                    <div class="mdl-tabs__panel is-active" id="server-log">
+                        <button class="server-refresh mdl-js-ripple-effect mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored">
+                            <i class="material-icons">refresh</i>
+                        </button>
+                        <div class="log-container">
+                            <div class="log">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdl-tabs__panel is-active" id="server-messages">
+                        <div class="messages-container">
+                            <ul class="mdl-list">
+                                <li class="mdl-list__item mdl-list__item--two-line">
+                                    <span class="mdl-list__item-primary-content">
+                                        <span>Message</span>
+                                        <span class="mdl-list__item-sub-title">Interval</span>
+                                    </span>
+                                    <span class="mdl-list__item-secondary-content">
+                                        <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="messages-input">
+                            <div class="messages-message mdl-textfield mdl-js-textfield mdl-textfield--slim">
+                                <input class="mdl-textfield__input" type="text">
+                                <label class="mdl-textfield__label" for="sample1">Message</label>
+                            </div>
+                            <div class="messages-duration mdl-textfield mdl-js-textfield mdl-textfield--slim">
+                                <input class="mdl-textfield__input" type="text">
+                                <label class="mdl-textfield__label" for="sample1">Duration</label>
+                            </div>
+                            <label class="messages-all mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-1">
+                                <input type="checkbox" id="checkbox-1" class="mdl-checkbox__input" checked>
+                                <span class="mdl-checkbox__label">All</span>
+                            </label>
+                            <button class="messages-add mdl-button mdl-button--mini-fab mdl-button--colored mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                                <i class="material-icons">add</i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

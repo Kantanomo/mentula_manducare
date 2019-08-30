@@ -31,7 +31,7 @@ namespace mentula_manducare.Objects
         public void resolveIndexes()
         {
             var name_ = this.Name;
-            if (name_ != StaticName || name_ != DynamicName)
+            if (name_ != StaticName)
             {
                 for (var i = 0; i < 16; i++)
                 {
@@ -96,7 +96,7 @@ namespace mentula_manducare.Objects
             Memory.ReadFloat(0x53F3A4 + (resolvedStaticIndex * 0x88), true);
 
         public Stopwatch LastMovement;
-        private bool AFKInit = false;
+        public bool AFKInit = false;
         public bool IsWarned = false;
         public bool isAFK = false;
         public bool HasMoved = false;

@@ -27,4 +27,3 @@ C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.csproj.CopyComplete
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.exe
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.pdb
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.csprojAssemblyReference.cache

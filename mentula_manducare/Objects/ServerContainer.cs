@@ -23,6 +23,7 @@ namespace mentula_manducare.Objects
         public string Instance { get; set; }
         private string _Name = "";
         private bool _xDelayFlop = false;
+        private bool _postGameFlop = false;
         public string Name
         {
             get
@@ -42,7 +43,7 @@ namespace mentula_manducare.Objects
         private int AFKWarntime_ = 0;
         public int AFKKicktime
         {
-            get => AFKKicktime_;
+            get => AFKKicktime_ / 1000;
             set
             {
                 AFKKicktime_ = value * 1000;
@@ -91,7 +92,7 @@ namespace mentula_manducare.Objects
                     {
                         RunCountdown =
                             false; //If lobby is frozen keep canceling the count down and set delay timer to absurd value
-                        XDelayTimer = short.MaxValue;
+                        XDelayTimer = ForcedXDelayTimer;
                         RunCountdown = true;
                     }
                     else
@@ -107,12 +108,17 @@ namespace mentula_manducare.Objects
                         if (_xDelayFlop & !RunCountdown)
                             _xDelayFlop = false;
                     }
+
+                    _postGameFlop = false;
                     break;
                 }
                 case GameState.Starting:
                     break;
                 case GameState.InGame:
                 {
+                    //Bugfix...
+                     RunCountdown = false;
+
                     //Because of dynamic player table issues instead of processing the whole player collection
                     //just iterate through all possible options, It ain't perfect but it works.
                     if (ForcedBiped != Biped.Disabled)
@@ -133,7 +139,7 @@ namespace mentula_manducare.Objects
                                 playerContainer.isAFK = false;
                                 ConsoleProxy.SendMessage(
                                     $"{playerContainer.Name} that was a close one.");
-                                }
+                            }
                             if (playerContainer.LastMovement.ElapsedMilliseconds >  AFKWarntime_ &&
                                 !playerContainer.IsWarned)
                             {
@@ -155,6 +161,19 @@ namespace mentula_manducare.Objects
                 case GameState.PostGame:
                 {
                     _xDelayFlop = false;
+                    //Not sure how but sometimes this bugs causing the game to  get stuck in post game, will remove later just a bugfix fornow
+                    XDelayTimer = 0;
+                    RunCountdown = false;
+
+                    if (!_postGameFlop)
+                    {
+                        if (AFKKicktime != 0)
+                        {
+                            foreach (PlayerContainer playerContainer in CurrentPlayers)
+                                playerContainer.AFKInit = false;
+                            _postGameFlop = true;
+                        }
+                    }
 
                     break;
                 }

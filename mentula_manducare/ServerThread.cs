@@ -46,7 +46,7 @@ namespace mentula_manducare
                 foreach (ServerContainer serverContainer in Servers)
                     serverContainer.Tick();
 
-                Thread.Sleep(30);
+                Thread.Sleep(15);
                 
                 TPS = TPS.Add(watch.Elapsed);
                 watch.Restart();
