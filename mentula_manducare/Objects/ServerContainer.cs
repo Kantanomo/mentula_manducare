@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Management;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using mentula_manducare.Classes;
 using mentula_manducare.Enums;
+using mentula_manducare.Objects.Extras;
 using MentulaManducare;
 using Microsoft.Win32;
 
@@ -24,6 +26,9 @@ namespace mentula_manducare.Objects
         private string _Name = "";
         private bool _xDelayFlop = false;
         private bool _postGameFlop = false;
+        private ServerPowerPit powerPit;
+        private ServerDeathRing deathRing;
+        private ServerAlleyBrawl alleyBrawl;
         public string Name
         {
             get
@@ -68,6 +73,9 @@ namespace mentula_manducare.Objects
             ConsoleProxy = new ConsoleProxy(this.Instance);
             LoadSettings();
             CurrentPlayers = new PlayerCollection(this);
+            powerPit = new ServerPowerPit(this);
+            deathRing = new ServerDeathRing(this);
+            alleyBrawl = new ServerAlleyBrawl(this);
         }
 
         public void KillConsoleProxy()
@@ -156,6 +164,17 @@ namespace mentula_manducare.Objects
                             }
                         }
 
+                    if (CurrentVariantMap == powerPit.MapName && CurrentVariantName.Contains(powerPit.VariantName))
+                        powerPit.InGameTick();
+
+                    if(CurrentVariantMap == deathRing.MapName && CurrentVariantName.Contains(deathRing.VariantName))
+                        deathRing.IngameTick();
+
+                    if (CurrentVariantMap == alleyBrawl.MapName && CurrentVariantName.Contains(alleyBrawl.VariantName))
+                    {
+                        alleyBrawl.InGameTick();
+                    }
+
                     break;
                 }
                 case GameState.PostGame:
@@ -164,7 +183,9 @@ namespace mentula_manducare.Objects
                     //Not sure how but sometimes this bugs causing the game to  get stuck in post game, will remove later just a bugfix fornow
                     XDelayTimer = 0;
                     RunCountdown = false;
-
+                    powerPit.InGameFlop = false;
+                    deathRing.InGameFlop = false;
+                    alleyBrawl.InGameFlop = false;
                     if (!_postGameFlop)
                     {
                         if (AFKKicktime != 0)
@@ -200,17 +221,19 @@ namespace mentula_manducare.Objects
             Settings.AddSetting("BRFix", BattleRifleVelocityOverride.ToString());
             Settings.AddSetting("Description", FormattedDescription);
             Settings.AddSetting("AFKTimer", AFKKicktime.ToString());
+            Settings.AddSetting("PCRDisable", PCRState.ToString());
         }
 
         public void LoadSettings()
         {
-            XDelayTimer = int.Parse(Settings.GetSetting("XDelayTimer", ForcedXDelayTimer.ToString()));
+            ForcedXDelayTimer = int.Parse(Settings.GetSetting("XDelayTimer", ForcedXDelayTimer.ToString()));
             ForcedBiped = (Biped)Enum.Parse(typeof(Biped), Settings.GetSetting("ForcedBiped", ForcedBiped.ToString()));
             Privacy = (Privacy) Enum.Parse(typeof(Privacy), Settings.GetSetting("Privacy", Privacy.ToString()));
             MaxPlayers = int.Parse(Settings.GetSetting("MaxPlayers", MaxPlayers.ToString()));
             BattleRifleVelocityOverride = float.Parse(Settings.GetSetting("BRFix", BattleRifleVelocityOverride.ToString()));
             Description = Settings.GetSetting("Description", "");
             AFKKicktime = int.Parse(Settings.GetSetting("AFKTimer", "0"));
+            PCRState = bool.Parse(Settings.GetSetting("PCRDisable", "true"));
         }
         public string FormattedName =>
             $"{Index} - {Name}:{Instance}";
@@ -235,6 +258,12 @@ namespace mentula_manducare.Objects
             }
         }
 
+        /// <summary>
+        /// This value is the internal clock that does not reflect match time or any other visibly trackable time, it will reset everytime there is a blue screen.
+        /// It only functions during the InGame GameState.
+        /// </summary>
+        public uint InternalTimer =>
+            ServerMemory.ReadUInt(0x3000257C);
         public int MaxPlayers {
             get => ServerMemory.ReadByte(0x534858, true);
             set => ConsoleProxy.Players(value);
@@ -355,6 +384,32 @@ namespace mentula_manducare.Objects
                 ServerMemory.WriteMemory(true, 0x5347F8, bytes.ToArray());
             }
         }
+
+        private bool PCRState_ = true;
+        public bool PCRState
+        {
+            get => PCRState_;
+            set
+            {
+                TogglePCR(value);
+                PCRState_ = value;
+            }
+        }
+        private void TogglePCR(bool state)
+        {
+            if (state)
+            {
+                ServerMemory.WriteMemory(true, 0xE579, new byte[] { 0x74, 0x10 });
+                ServerMemory.WriteMemory(true, 0xE58B, new byte[] { 0xB8, 0x0A, 0x0, 0x0, 0x0 });
+                ServerMemory.WriteMemory(true, 0xE590, new byte[] { 0x83, 0xC0, 0x19 });
+            }
+            else
+            {
+                ServerMemory.WriteMemory(true, 0xE579, new byte[]{ 0xEB, 0x10 });
+                ServerMemory.WriteMemory(true, 0xE58B, new byte[]{ 0xB8, 0x05, 0x0, 0x0, 0x0});
+                ServerMemory.WriteMemory(true, 0xE590, new byte[]{ 0x83, 0xC0, 0x0});
+            }
+        }
         /* ================================ *
          *  Static Properties and methods   *
          * ================================ */
@@ -372,6 +427,18 @@ namespace mentula_manducare.Objects
                 var CommandLine = objects.Cast<ManagementBaseObject>().SingleOrDefault()?["CommandLine"]?.ToString();
                 container.Instance = ServerInstanceMatch.Matches(CommandLine)[0]?.Value;
                 container.isLive = ServerLiveMatch.IsMatch(CommandLine);
+            }
+        }
+
+        private static Random random = new Random();
+
+        public static void FillPoints(ref List<PointF> Points, int count, float YMin, float YMax, float XMin, float XMax)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                float Y = (float)((YMax - YMin) * random.NextDouble() + YMin);
+                float X = (float)((XMax - XMin) * random.NextDouble() + XMin);
+                Points.Add(new PointF(X, Y));
             }
         }
     }

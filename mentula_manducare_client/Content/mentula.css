@@ -340,3 +340,6 @@
     min-width: unset !important;
     left: 5px;
 }
+.server-pcr {
+    width: 150px;
+}

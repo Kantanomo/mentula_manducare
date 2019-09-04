@@ -140,6 +140,9 @@
     <Compile Include="Enums\ServerPrivacy.cs" />
     <Compile Include="Helpers\HttpContextExtension.cs" />
     <Compile Include="MainThread.cs" />
+    <Compile Include="Objects\Extras\ServerAlleyBrawl.cs" />
+    <Compile Include="Objects\Extras\ServerDeathRing.cs" />
+    <Compile Include="Objects\Extras\ServerPowerPit.cs" />
     <Compile Include="Objects\PlayerCollection.cs" />
     <Compile Include="Objects\PlayerContainer.cs" />
     <Compile Include="Objects\ServerCollection.cs" />

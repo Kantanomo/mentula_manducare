@@ -353,7 +353,7 @@
                             </div>
                             <div class="mdl-tabs__panel is-active" id="server_settings">
                                 <div class="server-privacy mdl-select mdl-js-select mdl-textfield mdl-js-textfield mdl-textfield--floating-label" data-type="simple" data-width="150">
-                                    <input id="server_privacy" class="mdl-textfield__input" type="text"/>
+                                    <input id="server_privacy" class="mdl-textfield__input" type="text" />
                                     <label for="server_privacy" class="mdl-textfield__label">
                                         Privacy
                                     </label>
@@ -363,8 +363,9 @@
                                         <li class="mdl-menu__item" data-value="Closed">Closed</li>
                                     </ul>
                                 </div>
+
                                 <div class="server-biped mdl-select mdl-js-select mdl-textfield mdl-js-textfield mdl-textfield--floating-label" data-type="simple" data-width="150">
-                                    <input id="server_biped" class="mdl-textfield__input" type="text"/>
+                                    <input id="server_biped" class="mdl-textfield__input" type="text" />
                                     <label for="server_biped" class="mdl-textfield__label">
                                         Forced Biped
                                     </label>
@@ -376,7 +377,7 @@
                                     </ul>
                                 </div>
                                 <div class="server-max-players mdl-select mdl-js-select mdl-textfield mdl-js-textfield mdl-textfield--floating-label" data-type="simple" data-width="150">
-                                    <input id="server_players" class="mdl-textfield__input" type="text"/>
+                                    <input id="server_players" class="mdl-textfield__input" type="text" />
                                     <label for="server_players" class="mdl-textfield__label">
                                         Max Players
                                     </label>
@@ -409,6 +410,10 @@
                                     <label class="mdl-textfield__label" for="server_afk_timer">AFK Kick Timer</label>
                                     <span class="mdl-textfield__error">Invalid Input</span>
                                 </div>
+                                <label class="server-pcr mdl-switch mdl-js-switch mdl-js-ripple-effect" for="server-pcr">
+                                    <input type="checkbox" id="server-pcr" class="mdl-switch__input">
+                                    <span class="mdl-switch__label">Disable PCR</span>
+                                </label>
                                 <div data-mdl-tooltip="Supports symbols using the format [HEX VALUE]" class="server-description mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                     <input class="mdl-textfield__input" type="text" id="server_description">
                                     <label class="mdl-textfield__label" for="server_description">Description</label>

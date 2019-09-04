@@ -85,7 +85,7 @@ namespace MentulaManducare
                         $"An exception has occured within the application please check the error log in {Logger.LogBase}",
                         true);
 #endif
-                    Logger.AppendToLog("ErrorLog", eventArgs.Exception.ToString());
+                    Logger.AppendToLog("ErrorLog1", eventArgs.Exception.ToString());
                 }
 
             };

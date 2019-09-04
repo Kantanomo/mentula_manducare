@@ -112,7 +112,7 @@ namespace mentula_manducare.App_Code
         public void GetCurrentPlayersEvent(string serverIndex)
         {
             if (!WebSocketThread.Users.TokenLogin(CurrentToken).Result) return;
-            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+                var server = ServerThread.Servers[Guid.Parse(serverIndex)];
             if (server == null)
             {
                 NotifyServerChangeEvent();
@@ -194,6 +194,7 @@ namespace mentula_manducare.App_Code
                 a.Add("BRFix", server.BattleRifleVelocityOverride.ToString());
                 a.Add("Description", server.FormattedDescription);
                 a.Add("AFKTimer", server.AFKKicktime.ToString());
+                a.Add("PCRState", server.PCRState.ToString());
                 a.Add("ServerCount", ServerThread.Servers.ValidCount.ToString()); //Hacked to pieces.
                 CurrentUser.GetServerStatusEvent(JsonConvert.SerializeObject(a));
             }
@@ -451,10 +452,26 @@ namespace mentula_manducare.App_Code
                 Logger.AppendToLog(server.LogName,
                     $"{TokenResult.UserObject.Username} {((state == "true") ? "froze" : "unfroze")} the Lobby.");
                 server.LobbyRunning = state != "true";
-                MainThread.WriteLine(state);
             }
         }
 
+        public void SetPCRStateEvent(string serverIndex, string state)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.LogName,
+                    $"{TokenResult.UserObject.Username} {((state == "true") ? "disabled" : "enabled")} the PCR.");
+                server.PCRState = state != "true";
+                server.SaveSettings();
+            }
+        }
         public void ForceStartLobbyEvent(string serverIndex)
         {
             var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);

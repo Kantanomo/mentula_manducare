@@ -19,6 +19,7 @@
         street_sweeper: "District",
         terminal: "Terminal",
         triplicate: "Uplift",
+        needle: "Uplift",
         turf: "Turf",
         warlock: "Warlock",
         waterworks: "Waterworks",
