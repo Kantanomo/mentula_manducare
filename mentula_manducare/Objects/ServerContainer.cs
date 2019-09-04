@@ -222,6 +222,7 @@ namespace mentula_manducare.Objects
             Settings.AddSetting("Description", FormattedDescription);
             Settings.AddSetting("AFKTimer", AFKKicktime.ToString());
             Settings.AddSetting("PCRDisable", PCRState.ToString());
+            Settings.AddSetting("SyncProj", ProjectileSync.ToString());
         }
 
         public void LoadSettings()
@@ -234,6 +235,7 @@ namespace mentula_manducare.Objects
             Description = Settings.GetSetting("Description", "");
             AFKKicktime = int.Parse(Settings.GetSetting("AFKTimer", "0"));
             PCRState = bool.Parse(Settings.GetSetting("PCRDisable", "true"));
+            ProjectileSync = bool.Parse(Settings.GetSetting("SyncProj", "false"));
         }
         public string FormattedName =>
             $"{Index} - {Name}:{Instance}";
@@ -408,6 +410,43 @@ namespace mentula_manducare.Objects
                 ServerMemory.WriteMemory(true, 0xE579, new byte[]{ 0xEB, 0x10 });
                 ServerMemory.WriteMemory(true, 0xE58B, new byte[]{ 0xB8, 0x05, 0x0, 0x0, 0x0});
                 ServerMemory.WriteMemory(true, 0xE590, new byte[]{ 0x83, 0xC0, 0x0});
+            }
+        }
+
+        private bool ProjectileSync_ = false;
+
+        public bool ProjectileSync
+        {
+            get => ProjectileSync_;
+            set
+            {
+                ToggleForcedProjectileSync(value);
+                ProjectileSync_ = value;
+            }
+        }
+        private void ToggleForcedProjectileSync(bool state)
+        {
+            /*
+                Forces the server to spawn it's own projectiles instead of a clients.
+                weapon_fire+162    1E28                movsx   eax, word ptr [esi+52]
+                weapon_fire+166    1E28                sub     eax, 1 <--- Changes this
+                weapon_fire+169    1E28                jz      short loc_95C80D
+                weapon_fire+16B    1E28                sub     eax, 1 1 <--- Changes this
+                weapon_fire+16E    1E28                mov     [esp+1E28h+Barrel_Prediction_Not_Continuous], 1
+                weapon_fire+173    1E28                jz      short loc_95C80D
+                weapon_fire+175    1E28                mov     [esp+1E28h+Barrel_Prediction_None], 1
+             */
+            if (state)
+            {
+                //sub eax, 00
+                ServerMemory.WriteMemory(true, 0x140AAD, new byte[] { 0x83, 0xE8, 0x00 });
+                ServerMemory.WriteMemory(true, 0x140AB2, new byte[] { 0x83, 0xE8, 0x00 });
+            }
+            else
+            {
+                //sub eax, 01
+                ServerMemory.WriteMemory(true, 0x140AAD, new byte[] { 0x83, 0xE8, 0x01 });
+                ServerMemory.WriteMemory(true, 0x140AB2, new byte[] { 0x83, 0xE8, 0x01 });
             }
         }
         /* ================================ *

@@ -274,7 +274,7 @@
 
 
 
-.mdl-textfield {
+.mdl-textfield, .mdl-switch, .mdl-switch * {
     outline: none !important;
 }
 
@@ -343,3 +343,4 @@
 .server-pcr {
     width: 150px;
 }
+.server-sync-proj { width: 250px; }

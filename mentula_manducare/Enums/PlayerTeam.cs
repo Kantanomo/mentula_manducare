@@ -14,7 +14,7 @@ namespace mentula_manducare.Enums
         Green = 3,
         Purple = 4,
         Orange = 5,
-        Bronwn = 6,
+        Brown = 6,
         Pink = 7,
         Observer = 255
     }

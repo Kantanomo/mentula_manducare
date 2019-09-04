@@ -322,6 +322,14 @@ Mentula.prototype.InitNewServerTab = function (server) {
                 _this.SetPCRStateEvent(this.checked.toString());
         });
 
+    newTabElm.controls.serverSyncProj = newTabElm.querySelector('.server-sync-proj input');
+    newTabElm.controls.serverSyncProj.id = `${server.Index}-sync-proj`;
+    newTabElm.querySelector('.server-sync-proj').setAttribute('for', `${server.Index}-sync-proj`);
+    newTabElm.controls.serverSyncProj.addEventListener('change', function() {
+        if (newTabElm.init === true)
+            _this.SetSyncProjEvent(this.checked.toString());
+    });
+
     newTabElm.querySelectorAll('.mentula-hex').forEach(function(button) {
         button.addEventListener('click',
             function () {
@@ -478,6 +486,11 @@ Mentula.prototype.SetAFKTimerEvent = function(value) {
 Mentula.prototype.SetPCRStateEvent = function(value) {
     this.serverConnection.server.setPCRStateEvent(this.currentServer, value);
 }
+
+Mentula.prototype.SetSyncProjEvent = function(value) {
+    this.serverConnection.server.setSyncProjEvent(this.currentServer, value);
+}
+
 /**************************
  *       CALL BACKS       *
  **************************/
@@ -564,6 +577,12 @@ Mentula.prototype.GetServerStatusCallback = function (result) {
             tabContent.querySelector('.server-pcr').MaterialSwitch
                 .setState(status["PCRState"] !== "True");
         }
+
+        if (tabContent.querySelector('.server-sync-proj input').checked !== (status["SyncProj"] === "True")) {
+            tabContent.querySelector('.server-sync-proj').MaterialSwitch
+                .setState(status["SyncProj"] === "True");
+        }
+
         tabContent.init = true;
         //Look at this hot garbage... need to do some cleanup and add a element container to tabContent..
         //if (tabContent.querySelector('.server-privacy').MaterialSelect.selectedItem() !== status["Privacy"])
