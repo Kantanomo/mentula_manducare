@@ -318,28 +318,19 @@
                     <div class="mdl-tabs__panel is-active" id="server-messages">
                         <div class="messages-container">
                             <ul class="mdl-list">
-                                <li class="mdl-list__item mdl-list__item--two-line">
-                                    <span class="mdl-list__item-primary-content">
-                                        <span>Message</span>
-                                        <span class="mdl-list__item-sub-title">Interval</span>
-                                    </span>
-                                    <span class="mdl-list__item-secondary-content">
-                                        <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
-                                    </span>
-                                </li>
                             </ul>
                         </div>
                         <div class="messages-input">
                             <div class="messages-message mdl-textfield mdl-js-textfield mdl-textfield--slim">
-                                <input class="mdl-textfield__input" type="text">
+                                <input maxlength="120" class="mdl-textfield__input" type="text">
                                 <label class="mdl-textfield__label" for="sample1">Message</label>
                             </div>
-                            <div class="messages-duration mdl-textfield mdl-js-textfield mdl-textfield--slim">
-                                <input class="mdl-textfield__input" type="text">
+                            <div data-mdl-tooltip="Value has to be in the format HH:MM (00:01) is 1 minute" class="messages-duration mdl-textfield mdl-js-textfield mdl-textfield--slim">
+                                <input pattern="^([01]\d|2[0-3]):?([0-5]\d)$"  class="mdl-textfield__input" type="text">
                                 <label class="mdl-textfield__label" for="sample1">Duration</label>
                             </div>
                             <label class="messages-all mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-1">
-                                <input type="checkbox" id="checkbox-1" class="mdl-checkbox__input" checked>
+                                <input type="checkbox" id="checkbox-1" class="mdl-checkbox__input">
                                 <span class="mdl-checkbox__label">All</span>
                             </label>
                             <button class="messages-add mdl-button mdl-button--mini-fab mdl-button--colored mdl-js-button mdl-button--fab mdl-js-ripple-effect">
@@ -458,6 +449,17 @@
                 </i>
             </td>
         </tr>
+    </template>
+    <template id="MessageListTemplate">
+        <li class="mdl-list__item mdl-list__item--two-line">
+            <span class="mdl-list__item-primary-content">
+                <span>Message</span>
+                <span class="mdl-list__item-sub-title">Interval</span>
+            </span>
+            <span class="mdl-list__item-secondary-content">
+                <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
+            </span>
+        </li>
     </template>
     <template id="ListRowTemplate">
         <div class="list-item mdl-list__item">

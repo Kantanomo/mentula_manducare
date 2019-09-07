@@ -146,7 +146,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} kicked player {PlayerName}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} kicked player {PlayerName}");
                 server.ConsoleProxy.KickPlayer(PlayerName);
                 CurrentUser.KickPlayerEvent("Success");
             }
@@ -162,10 +162,54 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} changed server description to {description}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} changed server description to {description}");
                 server.Description = description;    
                 server.SaveSettings();
 
+            }
+        }
+
+        public void AddNewServerMessageEvent(string serverIndex, string message, string duration, string all)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                
+                if (all == "true")
+                    foreach (ServerContainer o in ServerThread.Servers)
+                    {
+                        Logger.AppendToLog(o.FileSafeName, $"{TokenResult.UserObject.Username} Added server message {message}");
+                        o.serverMessages.AddMessage(message, duration);
+                    }
+                else
+                {
+                    Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} Added server message {message}");
+                    server.serverMessages.AddMessage(message, duration);
+                }
+                LoadServerMessagesEvent(serverIndex);
+            }
+        }
+
+        public void DeleteServerMessageEvent(string serverIndex, string message)
+        {
+            var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
+            if (!TokenResult.Result) return;
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} removed server message {message}");
+                server.serverMessages.RemoveMessage(message);
+                CurrentUser.DeleteServerMessageEvent();
             }
         }
         public void GetServerStatusEvent(string serverIndex)
@@ -201,6 +245,22 @@ namespace mentula_manducare.App_Code
             }
         }
 
+        public void LoadServerMessagesEvent(string serverIndex)
+        {
+            if (!WebSocketThread.Users.TokenLogin(CurrentToken).Result) return;
+            var a = new List<KeyValuePair<string, string>>();
+            var server = ServerThread.Servers[Guid.Parse(serverIndex)];
+            if (server == null)
+            {
+                NotifyServerChangeEvent();
+            }
+            else
+            {
+                foreach (ServerMessage serverMessage in server.serverMessages)
+                    a.Add(new KeyValuePair<string, string>(serverMessage.message, serverMessage.interval.ToString()));
+                CurrentUser.LoadServerMessagesEvent(JsonConvert.SerializeObject(a));
+            }
+        }
         public void SkipServerEvent(string serverIndex)
         {
             var TokenResult = WebSocketThread.Users.TokenLogin(CurrentToken);
@@ -212,7 +272,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} skipped match");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} skipped match");
                 server.ConsoleProxy.Skip();
                 CurrentUser.SkipServerEvent("Success");
             }
@@ -228,7 +288,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} change the AFK Kick Timer to {value}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} change the AFK Kick Timer to {value}");
                 server.AFKKicktime = int.Parse(value);
                 server.SaveSettings();
             }
@@ -252,7 +312,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} banned player {playerName}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} banned player {playerName}");
                 server.ConsoleProxy.BanPlayer(playerName);
                 CurrentUser.BanPlayerEvent("Success");
             }
@@ -269,7 +329,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} unbanned player {playerName}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} unbanned player {playerName}");
                 server.ConsoleProxy.UnBanPlayer(playerName);
                 CurrentUser.UnBanPlayerEvent("Success");
             }
@@ -285,7 +345,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} timed out player {playerName}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} timed out player {playerName}");
                 server.CurrentPlayers[playerName]?.TimeoutPlayer();
             }
         }
@@ -318,7 +378,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} added {playerName} to VIP");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} added {playerName} to VIP");
                 server.ConsoleProxy.AddVIP(playerName);
                 CurrentUser.AddVIPPlayerEvent("success");
             }
@@ -335,7 +395,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} removed {playerName} from VIP");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} removed {playerName} from VIP");
                 server.ConsoleProxy.RemoveVIP(playerName);
                 CurrentUser.RemoveVIPPlayerEvent("Success");
             }
@@ -361,7 +421,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName,
+                Logger.AppendToLog(server.FileSafeName,
                     $"{TokenResult.UserObject.Username} changed playlist to {playlistname}");
                 ServerThread.Servers[Guid.Parse(serverIndex)].ConsoleProxy.SetPlaylist(playlistname);
                 CurrentUser.ChangePlaylistEvent("Success");
@@ -379,7 +439,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                var l = JsonConvert.SerializeObject(Logger.GetLog(server.LogName).DumpLogs());
+                var l = JsonConvert.SerializeObject(Logger.GetLog(server.FileSafeName).DumpLogs());
                 CurrentUser.LoadServerLogEvent(l);
             }
         }
@@ -395,7 +455,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName,
+                Logger.AppendToLog(server.FileSafeName,
                     $"{TokenResult.UserObject.Username} stopped server {server.FormattedName}");
                 server.KillServer(false);
                 CurrentUser.StopServerEvent("Server has been stopped.");
@@ -413,7 +473,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName,
+                Logger.AppendToLog(server.FileSafeName,
                     $"{TokenResult.UserObject.Username} restarted server {server.FormattedName}");
                 server.KillServer();
                 CurrentUser.RestartServerEvent("Server has been restarted.");
@@ -450,7 +510,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName,
+                Logger.AppendToLog(server.FileSafeName,
                     $"{TokenResult.UserObject.Username} {((state == "true") ? "froze" : "unfroze")} the Lobby.");
                 server.LobbyRunning = state != "true";
             }
@@ -467,7 +527,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName,
+                Logger.AppendToLog(server.FileSafeName,
                     $"{TokenResult.UserObject.Username} {((state == "true") ? "disabled" : "enabled")} the Projectile Sync.");
                 server.ProjectileSync = state == "true";
                 server.SaveSettings();
@@ -484,7 +544,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName,
+                Logger.AppendToLog(server.FileSafeName,
                     $"{TokenResult.UserObject.Username} {((state == "true") ? "disabled" : "enabled")} the PCR.");
                 server.PCRState = state != "true";
                 server.SaveSettings();
@@ -501,7 +561,7 @@ namespace mentula_manducare.App_Code
             }
             else
             {
-                Logger.AppendToLog(server.LogName,
+                Logger.AppendToLog(server.FileSafeName,
                     $"{TokenResult.UserObject.Username} Force stated the lobby.");
                 server.ForceStartLobby();
             }
@@ -520,7 +580,7 @@ namespace mentula_manducare.App_Code
             {
                 server.Privacy = (Privacy)Enum.Parse(typeof(Privacy), privacy);
                 server.SaveSettings();
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set privacy to {privacy}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} set privacy to {privacy}");
             }
         }
 
@@ -537,7 +597,7 @@ namespace mentula_manducare.App_Code
             {
                 server.ForcedBiped = (Biped)Enum.Parse(typeof(Biped), biped);
                 server.SaveSettings();
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set forced biped to {biped}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} set forced biped to {biped}");
             }
         }
 
@@ -554,7 +614,7 @@ namespace mentula_manducare.App_Code
             {
                 server.MaxPlayers = int.Parse(playerCount);
                 server.SaveSettings();
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set max players to {playerCount}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} set max players to {playerCount}");
             }
         }
 
@@ -571,7 +631,7 @@ namespace mentula_manducare.App_Code
             {
                 server.ForcedXDelayTimer = int.Parse(xDelayTime);
                 server.SaveSettings();
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set xdelay to {xDelayTime}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} set xdelay to {xDelayTime}");
             }
         }
 
@@ -588,7 +648,7 @@ namespace mentula_manducare.App_Code
             {
                 server.BattleRifleVelocityOverride = float.Parse(value);
                 server.SaveSettings();
-                Logger.AppendToLog(server.LogName, $"{TokenResult.UserObject.Username} set BRFix to {value}");
+                Logger.AppendToLog(server.FileSafeName, $"{TokenResult.UserObject.Username} set BRFix to {value}");
             }
         }
         public static void NotifyServerChangeEventEx()

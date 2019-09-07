@@ -29,6 +29,7 @@ namespace mentula_manducare.Objects
         private ServerPowerPit powerPit;
         private ServerDeathRing deathRing;
         private ServerAlleyBrawl alleyBrawl;
+        public ServerMessageCollection serverMessages;
         public string Name
         {
             get
@@ -55,7 +56,7 @@ namespace mentula_manducare.Objects
                 AFKWarntime_ = (int)Math.Floor(value * (decimal)0.8) * 1000;
             }
         }
-        public string LogName =>
+        public string FileSafeName =>
             Instance.Replace(':', '_');
 
         public SettingsCollection Settings;
@@ -65,7 +66,8 @@ namespace mentula_manducare.Objects
             ServerMemory = new MemoryHandler(ServerProcess);
             WebGuid = Guid.NewGuid(); //Used to handle the issues with server indexing with detaching/attaching instances.
             GetLaunchParameters(this);
-            Settings = new SettingsCollection(LogName);
+            Settings = new SettingsCollection(FileSafeName);
+            serverMessages = new ServerMessageCollection(FileSafeName);
         }
 
         public void LaunchConsoleProxy()
@@ -92,6 +94,10 @@ namespace mentula_manducare.Objects
 
         public void Tick()
         {
+            foreach (ServerMessage serverMessage in serverMessages)
+                if(serverMessage.Tick())
+                    ConsoleProxy.SendMessage(serverMessage.message);
+
             switch (GameState)
             {
                 case GameState.Lobby:

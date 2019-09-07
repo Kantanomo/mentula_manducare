@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using mentula_manducare.Classes;
 using mentula_manducare.Enums;
+using MentulaManducare;
 
 namespace mentula_manducare.Objects
 {
@@ -33,7 +34,7 @@ namespace mentula_manducare.Objects
             var name_ = this.Name;
             if (name_ != StaticName)
             {
-                for (var i = 0; i < 16; i++)
+                for (var i = 15; i >= 0; i--)
                 {
                     if (Memory.ReadStringUnicode(0x530E4C + (i * 0x128), 16, true) == name_)
                         resolvedStaticIndex = i;
@@ -113,7 +114,7 @@ namespace mentula_manducare.Objects
             }
             else
             {
-                if (LastCameraPitch != CameraPitch || LastCameraYaw != CameraYaw)
+                if (LastCameraPitch != CameraPitch | LastCameraYaw != CameraYaw)
                 {
                     LastMovement.Restart();
                     LastCameraPitch = CameraPitch;

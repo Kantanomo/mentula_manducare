@@ -114,6 +114,12 @@ Mentula.prototype.initEvents = function () {
     this.serverConnection.client.RemoveVIPPlayerEvent = function(result) {
         _this.RemoveVIPPlayerCallback(result);
     }
+    this.serverConnection.client.LoadServerMessagesEvent = function(result) {
+        _this.LoadServerMessagesCallback(result);
+    }
+    this.serverConnection.client.DeleteServerMessageEvent = function() {
+        _this.LoadServerMessagesEvent();
+    }
     window.setInterval(function () {
         _this.updateCurrentState();
     }, 5000);
@@ -330,12 +336,46 @@ Mentula.prototype.InitNewServerTab = function (server) {
             _this.SetSyncProjEvent(this.checked.toString());
     });
 
-    newTabElm.querySelectorAll('.mentula-hex').forEach(function(button) {
+    newTabElm.controls.serverMessage = newTabElm.querySelector('.messages-message');
+    newTabElm.controls.serverMessageInput = newTabElm.querySelector('.messages-message input');
+    newTabElm.controls.serverMessageInput.id = `${server.Index}-message`;
+    newTabElm.querySelector('.messages-message label').setAttribute('for', `${server.Index}-message`);
+    
+    newTabElm.controls.serverMessageDuration = newTabElm.querySelector('.messages-duration');
+    newTabElm.controls.serverMessageDurationInput = newTabElm.querySelector('.messages-duration input');
+    newTabElm.controls.serverMessageDurationInput.id = `${server.Index}-message-duration`;
+    newTabElm.querySelector('.messages-duration label').setAttribute('for', `${server.Index}-message-duration`);
+
+    newTabElm.controls.serverMessageAll = newTabElm.querySelector('.messages-all input');
+    newTabElm.controls.serverMessageAll.id = `${server.Index}-message-all`;
+    newTabElm.querySelector('.messages-all').setAttribute('for',`${server.Index}-message-all`);
+
+    newTabElm.controls.serverMessageAdd = newTabElm.querySelector('.messages-add');
+    newTabElm.controls.serverMessageAdd.id = `${server.Index}-message-add`;
+    newTabElm.controls.serverMessageAdd.addEventListener("click", function() {
+        if (newTabElm.init === true) {
+            if (newTabElm.controls.serverMessageInput.validity.valid &&
+                newTabElm.controls.serverMessageDurationInput.validity.valid) {
+                _this.AddNewServerMessageEvent(
+                    newTabElm.controls.serverMessageInput.value,
+                    newTabElm.controls.serverMessageDurationInput.value,
+                    newTabElm.controls.serverMessageAll.checked.toString());
+                newTabElm.controls.serverMessage.MaterialTextfield.change("");
+                newTabElm.controls.serverMessageDuration.MaterialTextfield.change("");
+            }
+        }
+    });
+
+
+    newTabElm.querySelectorAll('.mentula-hex').forEach(function (button) {
         button.addEventListener('click',
             function () {
                 _this.hexDialog.showModal();
             });
     });
+
+
+
     componentHandler.upgradeElements(newTabElm);
 
     //Yet again fixing MDL...
@@ -388,6 +428,7 @@ Mentula.prototype.tabChangedEvent = function (tabElement, force) {
         this.LoadBanListEvent();
         this.LoadVIPListEvent();
         this.LoadServerLogEvent();
+        this.LoadServerMessagesEvent();
         this.updateCurrentState();
     }
 }
@@ -491,6 +532,17 @@ Mentula.prototype.SetSyncProjEvent = function(value) {
     this.serverConnection.server.setSyncProjEvent(this.currentServer, value);
 }
 
+Mentula.prototype.AddNewServerMessageEvent = function(message, duration, all) {
+    this.serverConnection.server.addNewServerMessageEvent(this.currentServer, message, duration, all);
+}
+
+Mentula.prototype.LoadServerMessagesEvent = function() {
+    this.serverConnection.server.loadServerMessagesEvent(this.currentServer);
+}
+
+Mentula.prototype.DeleteServerMessageEvent = function(message) {
+    this.serverConnection.server.deleteServerMessageEvent(this.currentServer, message);
+}
 /**************************
  *       CALL BACKS       *
  **************************/
@@ -736,7 +788,23 @@ Mentula.prototype.LoadVIPListCallback = function(result) {
         vipList.append(newItem);
     });
 }
-
+Mentula.prototype.LoadServerMessagesCallback = function(result) {
+    var messages = JSON.parse(result);
+    var currentPanel = document.querySelector('.mdl-layout__tab-panel.is-active');
+    var messageList = currentPanel.querySelector('.messages-container .mdl-list');
+    messageList.innerHTML = "";
+    var _this = this;
+    messages.forEach(function(message) {
+        var newItem = document.querySelector('#MessageListTemplate').content.cloneNode(true);
+        newItem.querySelectorAll('.mdl-list__item-primary-content span')[0].innerHTML = message["Key"];
+        newItem.querySelectorAll('.mdl-list__item-primary-content span')[1].innerHTML = message["Value"];
+        newItem.querySelector('a').addEventListener('click',
+            function() {
+                _this.DeleteServerMessageEvent(message["Key"]);
+            });
+        messageList.append(newItem);
+    });
+}
 Mentula.prototype.AddVIPPlayerCallback = function(result) {
     var _this = this;
     window.setTimeout(function () {
