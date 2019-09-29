@@ -21,10 +21,14 @@ namespace mentula_manducare.Objects
     public class ServerContainer
     {
         public int Index { get; set; }
+        /// <summary>
+        /// Property used to insure unique identifiers inside the web UI.
+        /// </summary>
         public Guid WebGuid { get; set; }
         public string Instance { get; set; }
         private string _Name = "";
         private bool _xDelayFlop = false;
+        private bool _inGameFlop = false;
         private bool _postGameFlop = false;
         private ServerPowerPit powerPit;
         private ServerDeathRing deathRing;
@@ -91,7 +95,6 @@ namespace mentula_manducare.Objects
             this.ServerProcess.Kill();
             
         }
-
         public void Tick()
         {
             foreach (ServerMessage serverMessage in serverMessages)
@@ -133,11 +136,28 @@ namespace mentula_manducare.Objects
                     //Bugfix...
                      RunCountdown = false;
 
+                     if (!_inGameFlop)
+                     {
+                         while (ServerMemory.ReadUInt(0x4A29BC, true) == 0xFFFFFFFF ||
+                                ServerMemory.ReadInt(0x4A29BC, true) == 0)
+                         {
+                         }
+
+                         MainThread.WriteLine("Doing Ingame Operations");
+                         if (ProjectileSync)
+                         {
+                             MainThread.WriteLine("Fixing Projectiles");
+                             ToggleForcedProjectileSync();
+                         }
+
+                         _inGameFlop = true;
+                     }
                     //Because of dynamic player table issues instead of processing the whole player collection
                     //just iterate through all possible options, It ain't perfect but it works.
                     if (ForcedBiped != Biped.Disabled)
                         for (var i = 0; i < 16; i++)
                             ServerMemory.WriteByte(0x3000274C + (i * 0x204), (byte) ForcedBiped);
+
                     //EVENTUALLY REMOVABLE
                     if (DoBattleRifleVelocityOverride)
                         BattleRifleVelocity = BattleRifleVelocityOverride;
@@ -145,6 +165,9 @@ namespace mentula_manducare.Objects
                     if(AFKKicktime != 0)
                         foreach (PlayerContainer playerContainer in CurrentPlayers)
                         {
+                            //VIPList is also the AFK bypass list.
+                            if (GetVIPGamers.Contains(playerContainer.Name)) continue;
+
                             playerContainer.TickAFKCheck();
                             if (playerContainer.HasMoved)
                             {
@@ -154,13 +177,15 @@ namespace mentula_manducare.Objects
                                 ConsoleProxy.SendMessage(
                                     $"{playerContainer.Name} that was a close one.");
                             }
-                            if (playerContainer.LastMovement.ElapsedMilliseconds >  AFKWarntime_ &&
+
+                            if (playerContainer.LastMovement.ElapsedMilliseconds > AFKWarntime_ &&
                                 !playerContainer.IsWarned)
                             {
                                 playerContainer.IsWarned = true;
-                                    ConsoleProxy.SendMessage(
-                                        $"{playerContainer.Name} you are about to be kicked for being AFK you should move.");
+                                ConsoleProxy.SendMessage(
+                                    $"{playerContainer.Name} you are about to be kicked for being AFK you should move.");
                             }
+
                             if (playerContainer.LastMovement.ElapsedMilliseconds > AFKKicktime_ &&
                                 !playerContainer.isAFK)
                             {
@@ -189,6 +214,7 @@ namespace mentula_manducare.Objects
                     //Not sure how but sometimes this bugs causing the game to  get stuck in post game, will remove later just a bugfix fornow
                     XDelayTimer = 0;
                     RunCountdown = false;
+                    _inGameFlop = false;
                     powerPit.InGameFlop = false;
                     deathRing.InGameFlop = false;
                     alleyBrawl.InGameFlop = false;
@@ -309,7 +335,7 @@ namespace mentula_manducare.Objects
             get => (Privacy) ServerMemory.ReadByte(0x534850, true);
             set
             {
-                if(value == Enums.Privacy.Closed)
+                if(value == Privacy.Closed)
                     ServerMemory.WriteByte(0x534850, (byte) Privacy.Closed, true);
                 else
                     ConsoleProxy.Privacy(value);
@@ -426,13 +452,17 @@ namespace mentula_manducare.Objects
             get => ProjectileSync_;
             set
             {
-                ToggleForcedProjectileSync(value);
+                //ToggleForcedProjectileSync(value);
                 ProjectileSync_ = value;
             }
         }
-        private void ToggleForcedProjectileSync(bool state)
+
+        public bool isMapReady =>
+            ServerMemory.ReadStringAscii(ServerMemory.ReadInt(ServerMemory.ReadInt(0x4A29BC, true) + 8) + 0x27100, 4) == "gtam";
+        private void ToggleForcedProjectileSync()
         {
             /*
+             Old
                 Forces the server to spawn it's own projectiles instead of a clients.
                 weapon_fire+162    1E28                movsx   eax, word ptr [esi+52]
                 weapon_fire+166    1E28                sub     eax, 1 <--- Changes this
@@ -441,18 +471,79 @@ namespace mentula_manducare.Objects
                 weapon_fire+16E    1E28                mov     [esp+1E28h+Barrel_Prediction_Not_Continuous], 1
                 weapon_fire+173    1E28                jz      short loc_95C80D
                 weapon_fire+175    1E28                mov     [esp+1E28h+Barrel_Prediction_None], 1
+            
+            //if (state)
+            //{
+            //    //sub eax, 00
+            //    ServerMemory.WriteMemory(true, 0x140AAD, new byte[] { 0x83, 0xE8, 0x00 });
+            //    ServerMemory.WriteMemory(true, 0x140AB2, new byte[] { 0x83, 0xE8, 0x00 });
+            //}
+            //else
+            //{
+            //    //sub eax, 01
+            //    ServerMemory.WriteMemory(true, 0x140AAD, new byte[] { 0x83, 0xE8, 0x01 });
+            //    ServerMemory.WriteMemory(true, 0x140AB2, new byte[] { 0x83, 0xE8, 0x01 });
+            //}
              */
-            if (state)
+
+            while (!isMapReady)
+            {}
+            var TagTableStart = ServerMemory.ReadInt(ServerMemory.ReadInt(0x4A29BC, true) + 8) + 0x27100;
+
+            //Unset meme tag changes because super wanted to try it without them globally enabled.
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0xA84DD4), 400);
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0xA84DD8), 400);
+
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0xB7F914), 400);
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0xB7F918), 400);
+
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0xCE4598), 1200);
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0xCE459C), 1200);
+
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0x81113C), 1200);
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0x811140), 1200);
+
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0x97A194), 400);
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0x97A198), 400);
+
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0x7E7E20), 800);
+            ServerMemory.WriteFloat(ServerMemory.BlamCachePointer(0x7E7E24), 800);
+
+            //Loop through all possible tag entries, can't use Tag Count because MemeGun broke that to always just say max count
+            for (int i = 0; i < 15064; i++)
             {
-                //sub eax, 00
-                ServerMemory.WriteMemory(true, 0x140AAD, new byte[] { 0x83, 0xE8, 0x00 });
-                ServerMemory.WriteMemory(true, 0x140AB2, new byte[] { 0x83, 0xE8, 0x00 });
-            }
-            else
-            {
-                //sub eax, 01
-                ServerMemory.WriteMemory(true, 0x140AAD, new byte[] { 0x83, 0xE8, 0x01 });
-                ServerMemory.WriteMemory(true, 0x140AB2, new byte[] { 0x83, 0xE8, 0x01 });
+                //Current Tag Index Entry Address
+                var cAddress = TagTableStart + (i * 16);
+                //Current Tag Index Entry Identifier
+                var cIdent = ServerMemory.ReadUInt(cAddress + 4);
+                //If the Identifier is valid proceed
+                if (cIdent != 0xFFFFFFFF && cIdent != 0x0)
+                {
+                    //Current Tag Index Class
+                    var cClass = ServerMemory.ReadStringAscii(cAddress, 4);
+                    if (cClass == "paew") //Set Weapon Prediction Types to None
+                    {
+                        var cTagAddress = ServerMemory.BlamCachePointer(ServerMemory.ReadInt(cAddress + 8));
+                        int BarrelCount = ServerMemory.ReadInt(cTagAddress + 0x2D0);
+                        int BarrelAddress = ServerMemory.BlamCachePointer(ServerMemory.ReadInt(cTagAddress + 0x2D4));
+                        for (int j = 0; j < BarrelCount; j++) //Loop through all avaliable barrels
+                        {
+                            var CurrentBarrel = BarrelAddress + (j * 0xEC);
+                            if(ServerMemory.ReadShort(CurrentBarrel + 52) != 0) //Check only here for when testing Continuous mode
+                                ServerMemory.WriteShort(CurrentBarrel + 52, 0); //Set to None change to 1 to go to Continuous
+                        }
+                    }
+
+                    if (cClass == "jorp") //Unset Projectile Travels Instantly flag
+                    {
+                        var cTagAddress = ServerMemory.BlamCachePointer(ServerMemory.ReadInt(cAddress + 8));
+                        int cFlags = ServerMemory.ReadInt(cTagAddress + 0xBC);
+                        if (cFlags != 0)
+                            cFlags &= ~32;
+                        //Bitmask out the flag for Projectile Travels Instantly helps some projectiles sync properly faster
+                        ServerMemory.WriteInt(cTagAddress + 0xBC, cFlags);
+                    }
+                }
             }
         }
         /* ================================ *
@@ -468,7 +559,6 @@ namespace mentula_manducare.Objects
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT CommandLine FROM Win32_Process WHERE ProcessId = " + container.ServerProcess.Id))
             using (ManagementObjectCollection objects = searcher.Get())
             {
-                //WHAT ELSE CAN BE EXTRACTED
                 var CommandLine = objects.Cast<ManagementBaseObject>().SingleOrDefault()?["CommandLine"]?.ToString();
                 container.Instance = ServerInstanceMatch.Matches(CommandLine)[0]?.Value;
                 container.isLive = ServerLiveMatch.IsMatch(CommandLine);
@@ -476,7 +566,7 @@ namespace mentula_manducare.Objects
         }
 
         private static Random random = new Random();
-
+        //TODO: Refactor this into it's own class when structure of plugin's is created.
         public static void FillPoints(ref List<PointF> Points, int count, float YMin, float YMax, float XMin, float XMax)
         {
             for (int i = 0; i < count; i++)

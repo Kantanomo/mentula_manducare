@@ -54,9 +54,10 @@ namespace mentula_manducare.Objects.Extras
                 //TODO: Add in Objective object movement. CTF, Oddball, KOTH Add actual teleporters?
                 initFlop = false;
                 InGameFlop = true;
-                //Wait for the internal Timer to reach 500 (5 seconds).
-                while (_server.InternalTimer <= 500){}
-
+                while (!_server.isMapReady)
+                {
+                
+                }
                 var spawnPointCount = _server.ServerMemory.ReadInt(_server.ServerMemory.BlamCachePointer(0x143c100));
                 //In case the map hasn't fully loaded for some reason wait till it does.
                 while (spawnPointCount == 0)

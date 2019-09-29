@@ -20,17 +20,16 @@ namespace mentula_manducare.Objects.Extras
             _server = baseServer;
         }
 
-        public async void InitPowerPit()
+        public void InitPowerPit()
         {
            
             if (!InGameFlop)
             {
                 InGameFlop = true;
-                await Task.Run(() =>
-                {
-                    //Wait for the internal Timer to reach 500 (5 seconds).
-                    while (_server.InternalTimer <= 500) { }
+                    while (!_server.isMapReady)
+                    {
 
+                    }
                     var spawnPointCount = _server.ServerMemory.ReadInt(_server.ServerMemory.BlamCachePointer(0x143c100));
                     while (spawnPointCount == 0)
                     {
@@ -76,14 +75,11 @@ namespace mentula_manducare.Objects.Extras
                                 new byte[] {0x01, 0xFE, 0xFE, 0xFF});
                         }
                     }
-                });
             }
         }
-
         public void InGameTick()
         {
             InitPowerPit();
         }
-
     }
 }

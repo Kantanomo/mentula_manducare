@@ -21,15 +21,13 @@ namespace mentula_manducare.Objects.Extras
             _server = baseServer;
         }
 
-        public async void InitDeathRing()
+        public void InitDeathRing()
         {
-           
             if (!InGameFlop)
             {
                 InGameFlop = true;
-                await Task.Run(() =>
-                {
-                    while (_server.InternalTimer <= 500)
+                
+                    while (!_server.isMapReady)
                     {
                     }
 
@@ -68,7 +66,6 @@ namespace mentula_manducare.Objects.Extras
                                 new byte[] {0x01, 0xFE, 0xFE, 0xFF});
                         }
                     }
-                });
             }
         }
 
