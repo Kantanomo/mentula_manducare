@@ -94,12 +94,12 @@ namespace mentula_manducare.Classes
 
         public void AddVIP(string PlayerName)
         {
-            InputWriter.WriteLine($"vip add {PlayerName}");
+            InputWriter.WriteLine($"vip add \"{PlayerName}");
         }
 
         public void RemoveVIP(string PlayerName)
         {
-            InputWriter.WriteLine($"vip remove {PlayerName}");
+            InputWriter.WriteLine($"vip remove \"{PlayerName}");
         }
 
         public void ClearVIP()

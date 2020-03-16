@@ -132,6 +132,7 @@
     <Compile Include="Classes\ConsoleProxy.cs" />
     <Compile Include="Classes\Logger.cs" />
     <Compile Include="Classes\MemoryHandler.cs" />
+    <Compile Include="Classes\PluginEngine.cs" />
     <Compile Include="Classes\Update.cs" />
     <Compile Include="ConsoleInputThread.cs" />
     <Compile Include="Enums\Biped.cs" />
