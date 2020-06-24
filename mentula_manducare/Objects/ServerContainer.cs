@@ -280,6 +280,9 @@ namespace mentula_manducare.Objects
         public int PlayerCount =>
             ServerMemory.ReadByte(0x53329C, true);
 
+        public string CurrentPlaylist =>
+            ServerMemory.ReadStringUnicode(0x3B3704 + (ServerThread.PlaylistFolder.Length * 2), 100, true);
+
         private string _ServiceName = "";
 
         public string ServiceName

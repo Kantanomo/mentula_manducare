@@ -20,59 +20,68 @@ namespace MentulaManducare
         private static int InputTop = 0;
         private static int InputLeft = 0;
         private static bool yes = true;
-        const uint ENABLE_QUICK_EDIT = 0x0040;
         public static Update Updater = new Update();
         public static DateTime UpdateInterval = DateTime.Now;
-        
+
+        #region Disable Quick Edit Const & Extern
+        const uint ENABLE_QUICK_EDIT = 0x0040;
         // STD_INPUT_HANDLE (DWORD): -10 is the standard input device.
         const int STD_INPUT_HANDLE = -10;
-
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr GetStdHandle(int nStdHandle);
-
         [DllImport("kernel32.dll")]
         static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
-
         [DllImport("kernel32.dll")]
         static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+        #endregion
+
 
         public static string[] MutableErrors = new []
         {
+            //SignalR Error that just gets thrown no way to fix it
             "Microsoft.AspNet.SignalR.Hubs.ConnectionIdProxy",
+            //Literally no idea where this comes from, stack trace goes to extern code and enabling the setting doesn't fix it
+            //probably another SignalR thing
             "HKLM\\Software\\Microsoft\\Fusion!EnableLog",
+            //This gets thrown even if it successfully loads the lib.. SignalR
             "Could not load file or assembly 'mscorlib.XmlSerializers",
+            //This is thrown because the application is running a webserver without the proper 
+            //preformance counters installed
             "The requested Performance Counter is not a custom counter",
+            //It actually does load...
             ".Load"
         };
+
         static void Main(string[] args)
         {
-        //Gotta love new Features that probably break absolutely everything made in the past
-        //https://stackoverflow.com/questions/13656846/how-to-programmatic-disable-c-sharp-console-applications-quick-edit-mode/36720802#36720802
+            #region Disable Quick Edit
+            //Gotta love new Features that probably break absolutely everything made in the past
+            //https://stackoverflow.com/questions/13656846/how-to-programmatic-disable-c-sharp-console-applications-quick-edit-mode/36720802#36720802
             IntPtr consoleHandle = GetStdHandle(STD_INPUT_HANDLE);
             uint consoleMode;
             GetConsoleMode(consoleHandle, out consoleMode);
             consoleMode &= ~ENABLE_QUICK_EDIT;
             SetConsoleMode(consoleHandle, consoleMode);
-
-
-            #region Fuck Liberals
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "MMMMMMMM               MMMMMMMM               AAA                  GGGGGGGGGGGGG               AAA               "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M:::::::M             M:::::::M              A:::A              GGG::::::::::::G              A:::A              "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::::M           M::::::::M             A:::::A           GG:::::::::::::::G             A:::::A             "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M:::::::::M         M:::::::::M            A:::::::A         G:::::GGGGGGGG::::G            A:::::::A            "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::::::M       M::::::::::M           A:::::::::A       G:::::G       GGGGGG           A:::::::::A           "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M:::::::::::M     M:::::::::::M          A:::::A:::::A     G:::::G                        A:::::A:::::A          "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M:::::::M::::M   M::::M:::::::M         A:::::A A:::::A    G:::::G                       A:::::A A:::::A         "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::M M::::M M::::M M::::::M        A:::::A   A:::::A   G:::::G    GGGGGGGGGG        A:::::A   A:::::A        "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::M  M::::M::::M  M::::::M       A:::::A     A:::::A  G:::::G    G::::::::G       A:::::A     A:::::A       "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::M   M:::::::M   M::::::M      A:::::AAAAAAAAA:::::A G:::::G    GGGGG::::G      A:::::AAAAAAAAA:::::A      "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::M    M:::::M    M::::::M     A:::::::::::::::::::::AG:::::G        G::::G     A:::::::::::::::::::::A     "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::M     MMMMM     M::::::M    A:::::AAAAAAAAAAAAA:::::AG:::::G       G::::G    A:::::AAAAAAAAAAAAA:::::A    "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::M               M::::::M   A:::::A             A:::::AG:::::GGGGGGGG::::G   A:::::A             A:::::A   "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::M               M::::::M  A:::::A               A:::::AGG:::::::::::::::G  A:::::A               A:::::A  "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "M::::::M               M::::::M A:::::A                 A:::::A GGG::::::GGG:::G A:::::A                 A:::::A "));
-            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (113 / 2)) + "}", "MMMMMMMM               MMMMMMMMAAAAAAA                   AAAAAAA   GGGGGG   GGGGAAAAAAA                   AAAAAAA"));
             #endregion
+            #region Header
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "HHHHHHHHH     HHHHHHHHH  222222222222222     PPPPPPPPPPPPPPPPP            CCCCCCCCCCCCC"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "H:::::::H     H:::::::H 2:::::::::::::::22   P::::::::::::::::P        CCC::::::::::::C"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "H:::::::H     H:::::::H 2::::::222222:::::2  P::::::PPPPPP:::::P     CC:::::::::::::::C"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "HH::::::H     H::::::HH 2222222     2:::::2  PP:::::P     P:::::P   C:::::CCCCCCCC::::C"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "  H:::::H     H:::::H               2:::::2    P::::P     P:::::P  C:::::C       CCCCCC"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "  H:::::H     H:::::H               2:::::2    P::::P     P:::::P C:::::C              "));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "  H::::::HHHHH::::::H            2222::::2     P::::PPPPPP:::::P  C:::::C              "));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "  H:::::::::::::::::H       22222::::::22      P:::::::::::::PP   C:::::C              "));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "  H:::::::::::::::::H     22::::::::222        P::::PPPPPPPPP     C:::::C              "));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "  H::::::HHHHH::::::H    2:::::22222           P::::P             C:::::C              "));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "  H:::::H     H:::::H   2:::::2                P::::P             C:::::C              "));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "  H:::::H     H:::::H   2:::::2                P::::P              C:::::C       CCCCCC"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "HH::::::H     H::::::HH 2:::::2       222222 PP::::::PP             C:::::CCCCCCCC::::C"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "H:::::::H     H:::::::H 2::::::2222222:::::2 P::::::::P              CC:::::::::::::::C"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "H:::::::H     H:::::::H 2::::::::::::::::::2 P::::::::P                CCC::::::::::::C"));
+            WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (89 / 2)) + "}", "HHHHHHHHH     HHHHHHHHH 22222222222222222222 PPPPPPPPPP                   CCCCCCCCCCCCC"));
+            #endregion
+            #region Error Catching
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
             {
 
@@ -89,17 +98,21 @@ namespace MentulaManducare
                 }
 
             };
+
+            #endregion
+
             yes = false;
 
 #if !DEBUG
             Updater.CheckUpdates();
 #endif
             Console.Title = $"Mentula Manducare {Updater.CurrentVersion}";
-            //Start new thread for actual processing.
+
+            //Starts the Websocket server
             Task.Factory.StartNew(WebSocketThread.Run);
-
+            //Starts the server watching thread
             Task.Factory.StartNew(ServerThread.Run);
-
+            //Moved Input to seperate Thread for performance reasons.
             Task.Factory.StartNew(ConsoleInputThread.Run);
            
 
@@ -136,21 +149,24 @@ namespace MentulaManducare
             //Console.SetCursorPosition(InputLeft, InputTop);
         }
 
-      
+        private static bool basePathCheck = false;
         public static string BasePath
         {
             get
             {
-                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\"))
-                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\");
-                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Logs"))
-                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Logs");
-                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Settings"))
-                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Settings");
-                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Update"))
-                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Update");
-                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Messages"))
-                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Messages");
+                if (!basePathCheck) { 
+                    if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\"))
+                        Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\");
+                    if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Logs"))
+                        Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Logs");
+                    if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Settings"))
+                        Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Settings");
+                    if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Update"))
+                        Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Update");
+                    if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Messages"))
+                        Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Messages");
+                    basePathCheck = true;
+                }
                 return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\";
             }
         }

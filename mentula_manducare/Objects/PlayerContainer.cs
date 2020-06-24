@@ -96,6 +96,21 @@ namespace mentula_manducare.Objects
         public float CameraPitch =>
             Memory.ReadFloat(0x53F3A4 + (resolvedStaticIndex * 0x88), true);
 
+        public string Place
+        {
+            //Loop is required because the scoreboard will still keep players who have left in the list.
+            get
+            {
+                for (var i = 0; i < 16; i++)
+                {
+                    if (StaticName == Memory.ReadStringUnicode(0x49f6b0 + (0x110 * i), 32, true))
+                        return Memory.ReadStringUnicode(0x49F790 + (0x110 * 1), 8, true);
+                }
+                return "Nan";
+            }
+        }
+
+
         public Stopwatch LastMovement;
         public bool AFKInit = false;
         public bool IsWarned = false;

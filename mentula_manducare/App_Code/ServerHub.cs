@@ -67,6 +67,9 @@ namespace mentula_manducare.App_Code
             }
         }
 
+        
+
+
         public void LoginEvent(string Password)
         {
             try
@@ -92,6 +95,36 @@ namespace mentula_manducare.App_Code
                 MainThread.WriteLine("Unknown error has occured in WebSocket Server.... Restarting", true);
             }
         }
+
+        public void GetStats()
+        {
+            var a = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+            foreach (ServerContainer server in ServerThread.Servers)
+            {
+                if (server.Name != "")
+                {
+                    var b = new Dictionary<string, Dictionary<string, string>>();
+                    b.Add("Status", new Dictionary<string, string>
+                    {
+                        {"GameState", server.GameState.ToString()},
+                        {"CurrentMap", server.CurrentVariantMap},
+                        {"CurrentName", server.CurrentVariantName},
+                        {"NextMap", server.NextVariantMap},
+                        {"NextName", server.NextVariantName},
+                        {"Privacy", server.Privacy.ToString()}
+                    });
+                    b.Add("Players", new Dictionary<string, string>());
+                    foreach (var player in server.CurrentPlayers)
+                    {
+                        b["Players"].Add(player.Name, player.Place);
+                    }
+                    a.Add(server.Name, b);
+                }
+            }
+
+            CurrentUser.GetStats(JsonConvert.SerializeObject(a));
+        }
+
         public void GetServerListEvent()
         {
             if (!WebSocketThread.Users.TokenLogin(CurrentToken).Result) return;
@@ -241,6 +274,7 @@ namespace mentula_manducare.App_Code
                 a.Add("PCRState", server.PCRState.ToString());
                 a.Add("SyncProj", server.ProjectileSync.ToString());
                 a.Add("ServerCount", ServerThread.Servers.ValidCount.ToString()); //Hacked to pieces.
+                a.Add("CurrentPlaylist", server.CurrentPlaylist);
                 CurrentUser.GetServerStatusEvent(JsonConvert.SerializeObject(a));
             }
         }
@@ -403,7 +437,7 @@ namespace mentula_manducare.App_Code
         public void LoadPlaylistsEvent()
         {
             if (!WebSocketThread.Users.TokenLogin(CurrentToken).Result) return;
-            var playlists = Directory.GetFiles(ServerThread.PlaylistFolder);
+            var playlists = Directory.GetFiles(ServerThread.PlaylistFolder, "*.hpl");
             List<string> nlists = new List<string>();
             foreach (var playlist in playlists)
                 nlists.Add(playlist.Replace(ServerThread.PlaylistFolder, ""));       

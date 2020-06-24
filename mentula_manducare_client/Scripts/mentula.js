@@ -63,6 +63,9 @@ Mentula.prototype.init = function () {
 
 Mentula.prototype.initEvents = function () {
     var _this = this;
+    this.serverConnection.client.GetStats = function(result) {
+        console.log(result);
+    }
     this.serverConnection.client.LoginEvent = function (result, Token) {
         _this.LoginCallback(result, Token);
     }
@@ -592,6 +595,9 @@ Mentula.prototype.GetServerStatusCallback = function (result) {
         tabContent.querySelector('[data-elm="nextvariant"]').innerText =
             `${status["NextName"]} on ${this.extra.localizeMapName(status["NextMap"])}`;
 
+        tabContent.querySelector('[data-elm="currentplaylist"]').innerText =
+            status["CurrentPlaylist"];
+
         if (tabContent.querySelector('.server-freeze-lobby input').checked !== (status["LobbyRunning"] !== "True")) {
             tabContent.querySelector('.server-freeze-lobby').MaterialSwitch
                 .setState(status["LobbyRunning"] !== "True");
@@ -599,15 +605,15 @@ Mentula.prototype.GetServerStatusCallback = function (result) {
         
         if (tabContent.controls.serverPrivacy.MaterialSelect.selectedItem() !== status["Privacy"] &&
             !tabContent.controls.serverPrivacy.isFocused())
-            tabContent.controls.serverPrivacy.MaterialSelect.setSelectedItem(status["Privacy"]);
+            tabContent.controls.serverPrivacy.MaterialSelect.setSelectedItem(status["Privacy"], true);
 
         if (tabContent.controls.serverBiped.MaterialSelect.selectedItem() !== status["ForcedBiped"] &&
             !tabContent.controls.serverBiped.isFocused())
-            tabContent.controls.serverBiped.MaterialSelect.setSelectedItem(status["ForcedBiped"]);
+            tabContent.controls.serverBiped.MaterialSelect.setSelectedItem(status["ForcedBiped"], true);
 
         if (tabContent.controls.serverMaxPlayers.MaterialSelect.selectedItem() !== status["MaxPlayers"] &&
             !tabContent.controls.serverMaxPlayers.isFocused())
-            tabContent.controls.serverMaxPlayers.MaterialSelect.setSelectedItem(status["MaxPlayers"]);
+            tabContent.controls.serverMaxPlayers.MaterialSelect.setSelectedItem(status["MaxPlayers"], true);
 
         if (tabContent.controls.serverXDelayInput.value !== status["XDelayTimer"] &&
             !tabContent.controls.serverXDelay.isFocused())

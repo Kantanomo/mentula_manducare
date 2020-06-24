@@ -71,6 +71,9 @@ namespace mentula_manducare.Classes
             result += $"Del /F /Q /S {LanchPath}\\* {pause}"; //Delete current Files
             result += $"move /Y \"{BasePath}Temp\\*\" \"{LanchPath}\" {pause}";
             result += $"start \"\" \"{Application.ExecutablePath}\"";
+
+            //Fucking lazy shit
+            //Comes out to "Pause -> Delete current version -> pause -> Move new version into cd -> pause -> start new version"
             return result;
         }
         public void CheckUpdates()
