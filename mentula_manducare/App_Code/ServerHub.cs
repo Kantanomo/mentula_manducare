@@ -116,7 +116,7 @@ namespace mentula_manducare.App_Code
                     b.Add("Players", new Dictionary<string, string>());
                     foreach (var player in server.CurrentPlayers)
                     {
-                        b["Players"].Add(player.Name, player.Place);
+                        b["Players"].Add(player.Name, $"{player.Score}, {player.Team}");
                     }
                     a.Add(server.Name, b);
                 }

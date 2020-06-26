@@ -103,13 +103,26 @@ namespace mentula_manducare.Objects
             {
                 for (var i = 0; i < 16; i++)
                 {
-                    if (StaticName == Memory.ReadStringUnicode(0x49f6b0 + (0x110 * i), 32, true))
-                        return Memory.ReadStringUnicode(0x49F790 + (0x110 * 1), 8, true);
+                    if (StaticName == Memory.ReadStringUnicode(0x9917da + (0x40 * i), 32, true))
+                        return i.ToString();
+                    return Memory.ReadStringUnicode(0x991BDC + (0x4 * i), 8, true);
                 }
                 return "Nan";
             }
         }
-
+        public string Score
+        {
+            //Loop is required because the scoreboard will still keep players who have left in the list.
+            get
+            {
+                for (var i = 0; i < 16; i++)
+                {
+                    if (StaticName == Memory.ReadStringUnicode(0x9917da + (0x40 * i), 32, true))
+                        return Memory.ReadInt(0x991BDC + (0x4 * i), true).ToString();
+                }
+                return "Nan";
+            }
+        }
 
         public Stopwatch LastMovement;
         public bool AFKInit = false;
