@@ -15,7 +15,11 @@ namespace mentula_manducare.Classes
     public class Update
     {
         public static string RemoteBaseURI = "http://halo2pc.com/mentula/monitor/";
+#if !DEBUG
         public string RemoteVersionURI = $"{RemoteBaseURI}latest.txt";
+#else
+        public string RemoteVersionURI = $"{RemoteBaseURI}latestdev.txt";
+#endif
         public static string BasePath = $"{MainThread.BasePath}\\Update\\";
         public string LocalVersionPath = $"{BasePath}latest.txt";
         public string RemoteVersionPath = $"{BasePath}latest_tmp.txt";
@@ -66,11 +70,14 @@ namespace mentula_manducare.Classes
         public string GenerateUpdateBatch()
         {
             var LanchPath = Application.StartupPath;
+            var exePath = (Application.ExecutablePath.ToLower().Contains("mentula")
+                ? Application.StartupPath + "\\H2Pineapple.exe"
+                : Application.ExecutablePath);
             var pause = "& ping 127.0.0.1 -n 1 -w 5000 > Nul & ";
             var result = $"/C ping 127.0.0.1 -n 1 -w 5000 > Nul & ";
             result += $"Del /F /Q /S {LanchPath}\\* {pause}"; //Delete current Files
             result += $"move /Y \"{BasePath}Temp\\*\" \"{LanchPath}\" {pause}";
-            result += $"start \"\" \"{Application.ExecutablePath}\"";
+            result += $"start \"\" \"{exePath}\"";
 
             //Fucking lazy shit
             //Comes out to "Pause -> Delete current version -> pause -> Move new version into cd -> pause -> start new version"

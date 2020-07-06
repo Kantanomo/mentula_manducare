@@ -27,6 +27,7 @@ namespace mentula_manducare
             Params.RemoveAt(0);
             switch (Command.ToLower())
             {
+              
                 case "adduser":
                     {
                         if (Params.Count != 2)
@@ -105,7 +106,19 @@ namespace mentula_manducare
                         }
                         break;
                     }
-
+                case "savestats":
+                    {
+                        if (int.Parse(Params[0]) <= ServerThread.Servers.Count)
+                        {
+                            MainThread.WriteLine($"Printing Stats for server {Params[0]}...", true);
+                            ServerThread.Servers[int.Parse(Params[0])].CarnageReport.SaveJSON();
+                        }
+                        else
+                        {
+                            MainThread.WriteLine($"Invalid Server Index given.");
+                        }
+                        break;
+                    }
                 default:
                     {
                         MainThread.WriteLine("Invalid Command", true);

@@ -13,6 +13,7 @@ using System.Web.Script.Serialization;
 using mentula_manducare.Classes;
 using mentula_manducare.Enums;
 using mentula_manducare.Objects.Extras;
+using mentula_manducare.Objects.Server;
 using MentulaManducare;
 using Microsoft.Win32;
 
@@ -48,6 +49,7 @@ namespace mentula_manducare.Objects
         public Process ServerProcess { get; set; }
         public MemoryHandler ServerMemory { get; set; }
         public ConsoleProxy ConsoleProxy { get; set; }
+        public ServerPostGameCarnage CarnageReport { get; set; }
         public bool AutoRestart = true;
         private int AFKKicktime_ = 0;
         private int AFKWarntime_ = 0;
@@ -82,6 +84,7 @@ namespace mentula_manducare.Objects
             powerPit = new ServerPowerPit(this);
             deathRing = new ServerDeathRing(this);
             alleyBrawl = new ServerAlleyBrawl(this);
+            CarnageReport = new ServerPostGameCarnage(this);
         }
 
         public void KillConsoleProxy()
@@ -224,9 +227,13 @@ namespace mentula_manducare.Objects
                         {
                             foreach (PlayerContainer playerContainer in CurrentPlayers)
                                 playerContainer.AFKInit = false;
-                            _postGameFlop = true;
+                           
                         }
-                    }
+#if DEBUG
+                            CarnageReport.SaveJSON();
+#endif
+                        _postGameFlop = true;
+                        }
 
                     break;
                 }

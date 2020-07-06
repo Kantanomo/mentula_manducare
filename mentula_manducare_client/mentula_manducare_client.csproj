@@ -112,7 +112,6 @@
     <Content Include="Scripts\MentulaCore.js" />
     <Content Include="Scripts\MentulaEndpoint.js" />
     <Content Include="Scripts\stats.js" />
-    <Content Include="stats.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

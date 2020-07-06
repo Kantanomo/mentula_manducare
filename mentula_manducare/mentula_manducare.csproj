@@ -7,7 +7,7 @@
     <ProjectGuid>{FA90B29B-56DC-4A77-B891-1C49E7284A66}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>mentula_manducare</RootNamespace>
-    <AssemblyName>mentula_manducare</AssemblyName>
+    <AssemblyName>H2Pineapple</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -150,6 +150,8 @@
     <Compile Include="Objects\ServerContainer.cs" />
     <Compile Include="Objects\ServerMessage.cs" />
     <Compile Include="Objects\ServerMessageCollection.cs" />
+    <Compile Include="Objects\Server\PostGameCarnageEntry.cs" />
+    <Compile Include="Objects\Server\ServerPostGameCarnage.cs" />
     <Compile Include="Objects\SettingsCollection.cs" />
     <Compile Include="Objects\User.cs" />
     <Compile Include="Objects\UserCollection.cs" />

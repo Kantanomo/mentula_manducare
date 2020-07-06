@@ -1,6 +1,3 @@
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\mentula_manducare.exe.config
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\mentula_manducare.exe
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\mentula_manducare.pdb
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\Microsoft.AspNet.SignalR.Client.dll
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\Microsoft.AspNet.SignalR.Core.dll
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\Microsoft.Owin.Cors.dll
@@ -25,5 +22,9 @@ C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\Newtonsoft.Json.xml
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.csproj.CoreCompileInputs.cache
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.csproj.CopyComplete
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.exe
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.pdb
+C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\H2Pineapple.exe.config
+C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\H2Pineapple.exe
+C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Release\H2Pineapple.pdb
+C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\H2Pineapple.exe
+C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\H2Pineapple.pdb
+C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Release\mentula_manducare.csprojAssemblyReference.cache

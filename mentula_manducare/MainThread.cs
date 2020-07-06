@@ -106,7 +106,7 @@ namespace MentulaManducare
 #if !DEBUG
             Updater.CheckUpdates();
 #endif
-            Console.Title = $"Mentula Manducare {Updater.CurrentVersion}";
+            Console.Title = $"H2Pineapple {Updater.CurrentVersion}";
 
             //Starts the Websocket server
             Task.Factory.StartNew(WebSocketThread.Run);
@@ -165,6 +165,8 @@ namespace MentulaManducare
                         Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Update");
                     if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Messages"))
                         Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Messages");
+                    if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Stats"))
+                        Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Stats");
                     basePathCheck = true;
                 }
                 return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\";
