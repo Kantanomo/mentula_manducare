@@ -539,8 +539,13 @@ namespace mentula_manducare.Objects
                         for (int j = 0; j < BarrelCount; j++) //Loop through all avaliable barrels
                         {
                             var CurrentBarrel = BarrelAddress + (j * 0xEC);
-                            if(ServerMemory.ReadShort(CurrentBarrel + 52) != 0) //Check only here for when testing Continuous mode
+                            if(ServerMemory.ReadShort(CurrentBarrel + 52) != 0){ //Check only here for when testing Continuous mode
                                 ServerMemory.WriteShort(CurrentBarrel + 52, 0); //Set to None change to 1 to go to Continuous
+                            }
+                            else
+                            {
+                                Logger.AppendToLog("WeaponAddresses", $"{(ServerMemory.ReadInt(cTagAddress + 0x2D4) + (j * 0xEC) + 52):X}");
+                            }
                         }
                     }
 

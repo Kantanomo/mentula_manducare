@@ -82,6 +82,9 @@ namespace mentula_manducare.Objects.Server
         public string Place =>
             _memory.ReadStringUnicode(calcPCROffset + 0xE0, 16, true);
 
+        public string Score =>
+            _memory.ReadStringUnicode(calcPCROffset + 0x40, 16, true);
+
         public short Kills =>
             _memory.ReadShort(calcRTPCROffset, true);
 
