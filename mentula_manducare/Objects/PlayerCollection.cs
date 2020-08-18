@@ -72,7 +72,8 @@ namespace mentula_manducare.Objects
         public new IEnumerator<PlayerContainer> GetEnumerator()
         {
             Reload();
-            foreach (PlayerContainer player in List)
+            var TList = List;
+            foreach (PlayerContainer player in TList)
                 yield return player;
         }
     }

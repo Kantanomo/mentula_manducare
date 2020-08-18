@@ -27,4 +27,3 @@ C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\H2
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\bin\Debug\H2Pineapple.pdb
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Debug\H2Pineapple.exe
 C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Debug\H2Pineapple.pdb
-C:\Users\Mickenzie\source\repos\mentula_manducare\mentula_manducare\obj\Debug\mentula_manducare.csprojAssemblyReference.cache

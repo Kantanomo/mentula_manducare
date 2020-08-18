@@ -22,7 +22,9 @@ namespace MentulaManducare
         private static bool yes = true;
         public static Update Updater = new Update();
         public static DateTime UpdateInterval = DateTime.Now;
-
+        private static Task ServerThread_;
+        private static Task WebSocketThread_;
+        private static Task InputThread_;
         #region Disable Quick Edit Const & Extern
         const uint ENABLE_QUICK_EDIT = 0x0040;
         // STD_INPUT_HANDLE (DWORD): -10 is the standard input device.
@@ -109,12 +111,11 @@ namespace MentulaManducare
             Console.Title = $"H2Pineapple {Updater.CurrentVersion}";
 
             //Starts the Websocket server
-            Task.Factory.StartNew(WebSocketThread.Run);
+            WebSocketThread_ = Task.Factory.StartNew(WebSocketThread.Run);
             //Starts the server watching thread
-            Task.Factory.StartNew(ServerThread.Run);
+            ServerThread_ = Task.Factory.StartNew(ServerThread.Run);
             //Moved Input to seperate Thread for performance reasons.
-            Task.Factory.StartNew(ConsoleInputThread.Run);
-           
+            InputThread_ = Task.Factory.StartNew(ConsoleInputThread.Run);
 
             while (true)
             {
@@ -125,7 +126,11 @@ namespace MentulaManducare
                     UpdateInterval = DateTime.Now;
                 }
 #endif
-                Thread.Sleep(60000);
+                if (WebSocketThread_.IsFaulted || WebSocketThread_.IsCompleted || WebSocketThread_.IsCanceled)
+                    WebSocketThread_ = Task.Factory.StartNew(WebSocketThread.Run);
+                if (ServerThread_.IsFaulted || ServerThread_.IsCompleted || ServerThread_.IsCanceled)
+                    ServerThread_ = Task.Factory.StartNew(ServerThread.Run);
+                Thread.Sleep(1000);
             }
         }
 

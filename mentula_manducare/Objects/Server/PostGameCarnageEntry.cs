@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -85,104 +86,113 @@ namespace mentula_manducare.Objects.Server
         public string Score =>
             _memory.ReadStringUnicode(calcPCROffset + 0x40, 16, true);
 
-        public short Kills =>
-            _memory.ReadShort(calcRTPCROffset, true);
+        public ushort Kills =>
+            _memory.ReadUShort(calcRTPCROffset, true);
 
-        public short Assists =>
-            _memory.ReadShort(calcRTPCROffset + 0x2, true);
+        public ushort Assists =>
+            _memory.ReadUShort(calcRTPCROffset + 0x2, true);
 
-        public short Deaths =>
-            _memory.ReadShort(calcRTPCROffset + 0x4, true);
+        public ushort Deaths =>
+            _memory.ReadUShort(calcRTPCROffset + 0x4, true);
 
-        public short Betrayals =>
-            _memory.ReadShort(calcRTPCROffset + 0x6, true);
+        public ushort Betrayals =>
+            _memory.ReadUShort(calcRTPCROffset + 0x6, true);
 
-        public short Suicides =>
-            _memory.ReadShort(calcRTPCROffset + 0x8, true);
+        public ushort Suicides =>
+            _memory.ReadUShort(calcRTPCROffset + 0x8, true);
 
-        public short BestSpree =>
-            _memory.ReadShort(calcRTPCROffset + 0xA, true);
+        public ushort BestSpree =>
+            _memory.ReadUShort(calcRTPCROffset + 0xA, true);
 
-        public short TimeAlive =>
-            _memory.ReadShort(calcRTPCROffset + 0xC);
+        public ushort TimeAlive =>
+            _memory.ReadUShort(calcRTPCROffset + 0xC, true);
+
+        public ushort ShotsFired =>
+            _memory.ReadUShort(calcPCROffset + 0x84, true);
+
+        public ushort ShotsHit =>
+            _memory.ReadUShort(calcPCROffset + 0x88, true);
+
+        public ushort HeadShots =>
+            _memory.ReadUShort(calcPCROffset + 0x8C, true);
 
         //CTF
-        public short FlagScores =>
-            _memory.ReadShort(calcRTPCROffset + 0xE, true);
+        public ushort FlagScores =>
+            _memory.ReadUShort(calcRTPCROffset + 0xE, true);
 
-        public short FlagSteals =>
-            _memory.ReadShort(calcRTPCROffset + 0x10, true);
+        public ushort FlagSteals =>
+            _memory.ReadUShort(calcRTPCROffset + 0x10, true);
 
-        public short FlagSaves =>
-            _memory.ReadShort(calcRTPCROffset + 0x12, true);
+        public ushort FlagSaves =>
+            _memory.ReadUShort(calcRTPCROffset + 0x12, true);
 
-        public short FlagUnk =>
-            _memory.ReadShort(calcRTPCROffset + 0x14, true);
+        public ushort FlagUnk =>
+            _memory.ReadUShort(calcRTPCROffset + 0x14, true);
         //Assault
-        public short BombScores =>
-            _memory.ReadShort(calcRTPCROffset + 0x18, true);
+        public ushort BombScores =>
+            _memory.ReadUShort(calcRTPCROffset + 0x18, true);
 
-        public short BombKills =>
-            _memory.ReadShort(calcRTPCROffset + 0x1A, true);
+        public ushort BombKills =>
+            _memory.ReadUShort(calcRTPCROffset + 0x1A, true);
 
-        public short BombGrabs =>
-            _memory.ReadShort(calcRTPCROffset + 0x1C, true);
+        public ushort BombGrabs =>
+            _memory.ReadUShort(calcRTPCROffset + 0x1C, true);
 
         //Oddball
-        public short BallScore =>
-            _memory.ReadShort(calcRTPCROffset + 0x20, true);
+        public ushort BallScore =>
+            _memory.ReadUShort(calcRTPCROffset + 0x20, true);
 
-        public short BallKills =>
-            _memory.ReadShort(calcRTPCROffset + 0x22, true);
+        public ushort BallKills =>
+            _memory.ReadUShort(calcRTPCROffset + 0x22, true);
 
-        public short BallCarrierKills =>
-            _memory.ReadShort(calcRTPCROffset + 0x24, true);
+        public ushort BallCarrierKills =>
+            _memory.ReadUShort(calcRTPCROffset + 0x24, true);
         //KotH
-        public short KingKillsAsKing =>
-            _memory.ReadShort(calcRTPCROffset + 0x26, true);
+        public ushort KingKillsAsKing =>
+            _memory.ReadUShort(calcRTPCROffset + 0x26, true);
 
-        public short KingKilledKings =>
-            _memory.ReadShort(calcRTPCROffset + 0x28, true);
+        public ushort KingKilledKings =>
+            _memory.ReadUShort(calcRTPCROffset + 0x28, true);
 
        //Juggernaut
-       public short JuggKilledJuggs =>
-           _memory.ReadShort(calcRTPCROffset + 0x3C, true);
+       public ushort JuggKilledJuggs =>
+           _memory.ReadUShort(calcRTPCROffset + 0x3C, true);
 
-       public short JuggKillsAsJugg =>
-           _memory.ReadShort(calcRTPCROffset + 0x3E, true);
+       public ushort JuggKillsAsJugg =>
+           _memory.ReadUShort(calcRTPCROffset + 0x3E, true);
 
-       public short JuggTime =>
-           _memory.ReadShort(calcRTPCROffset + 0x40, true);
+       public ushort JuggTime =>
+           _memory.ReadUShort(calcRTPCROffset + 0x40, true);
        //Territories
-       public short TerrTaken =>
-           _memory.ReadShort(calcRTPCROffset + 0x46, true);
+       public ushort TerrTaken =>
+           _memory.ReadUShort(calcRTPCROffset + 0x46, true);
 
-       public short TerrLost =>
-           _memory.ReadShort(calcRTPCROffset + 0x48, true);
+       public ushort TerrLost =>
+           _memory.ReadUShort(calcRTPCROffset + 0x48, true);
 
        #endregion
-        
-        public short[] MedalData
+
+       public ushort[] MedalData
        {
            get
            {
-               var arr = new short[24];
+               var arr = new ushort[24];
                for (var i = 0; i < 24; i++)
-                   arr[i] = _memory.ReadShort(calcRTPCROffset + 0x4A + (i * 2), true);
+                   arr[i] = _memory.ReadUShort(calcRTPCROffset + 0x4A + (i * 2), true);
                return arr;
            }
        }
 
-        public List<short[]> WeaponData
+       public List<ushort[]> WeaponData
        {
            get
            {
-               var list = new List<short[]>();
+               var list = new List<ushort[]>();
                for (var i = 0; i < 36; i++)
                {
-                   var arr = new short[6];
+                   var arr = new ushort[6];
                    for (var j = 0; j < 6; j++)
-                       arr[j] = _memory.ReadShort(calcRTPCROffset + 0xDE + (i * 0x10) + (j * 2), true);
+                       arr[j] = _memory.ReadUShort(calcRTPCROffset + 0xDE + (i * 0x10) + (j * 2), true);
                    list.Add(arr);
                }
 

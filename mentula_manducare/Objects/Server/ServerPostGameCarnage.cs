@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -12,25 +14,46 @@ namespace mentula_manducare.Objects.Server
     public class ServerPostGameCarnage
     {
         [ScriptIgnore]
-        private ServerContainer Server;
+        private ServerContainer Server_;
         [ScriptIgnore]
         private static string BasePath = $"{MainThread.BasePath}\\Stats";
 
-       
+
+
+        
 
         public ServerPostGameCarnage(ServerContainer Server)
         {
-            this.Server = Server;
+            this.Server_ = Server;
+            this.Variant = new VariantM(Server);
+        }
+        [ScriptIgnore]
+        public string PlaylistFile =>
+            Server_.ServerMemory.ReadStringUnicode(0x3B3704, 600, true);
+        public string PlaylistChecksum
+        {
+            get
+            {
+                using (var md5 = MD5.Create())
+                {
+                    using (var stream = File.OpenRead(PlaylistFile))
+                    {
+                        var hash = md5.ComputeHash(stream);
+                        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                    }
+                }
+            }
         }
 
-        public string VariantName =>
-            Server.ServerMemory.ReadStringUnicode(0x4DC3D4, 16, true);
-
-        public byte VariantType =>
-            Server.ServerMemory.ReadByte(0x4DC414, true);
-
         public string Scenario =>
-            Server.ServerMemory.ReadStringUnicode(0x4DC504, 200, true).Split('\\').Last();
+            Server_.ServerMemory.ReadStringUnicode(0x4DC504, 200, true).Split('\\').Last();
+
+        public VariantM Variant;
+        public Dictionary<string, string> Server => new Dictionary<string, string>
+        {
+            {"XUID", "1234"},
+            {"Name", "Placeholder Server" }
+        };
 
         public List<PostGameCarnageEntry> Players
         {
@@ -39,7 +62,7 @@ namespace mentula_manducare.Objects.Server
                 var list = new List<PostGameCarnageEntry>();
                 for (byte index = 0; index < 16; index++)
                 {
-                    var newEntry = new PostGameCarnageEntry(Server.ServerMemory, index);
+                    var newEntry = new PostGameCarnageEntry(Server_.ServerMemory, index);
                     if (newEntry.XUID != 0 && newEntry.Gamertag != "")
                         list.Add(newEntry);
                 }
@@ -60,11 +83,34 @@ namespace mentula_manducare.Objects.Server
                 return list;
             }
         }
-
-        public void SaveJSON()
+        public string SaveJSON()
         {
-            File.AppendAllText($"{BasePath}\\{Server.FileSafeName}_{DateTime.Now.ToFileTimeUtc()}.json",
-                new JavaScriptSerializer().Serialize(this));
+            string f = $"{BasePath}\\{Server_.FileSafeName}_{DateTime.Now.ToFileTimeUtc()}.json";
+            StreamWriter fs = new StreamWriter(File.Create(f));
+            fs.Write(new JavaScriptSerializer().Serialize(this));
+            fs.Flush();
+            fs.Close();
+            fs.Dispose();
+            return f;
         }
+    }
+
+    public class VariantM
+    {
+        [ScriptIgnore]
+        private ServerContainer Server;
+        public VariantM(ServerContainer Server)
+        {
+            this.Server = Server;
+        }
+        public string Name =>
+            Server.ServerMemory.ReadStringUnicode(0x4DC3D4, 16, true);
+        public byte Type =>
+            Server.ServerMemory.ReadByte(0x4DC414, true);
+
+        public Dictionary<string, string> Settings => new Dictionary<string, string>
+        {
+            {"Team Play", "1"}
+        };
     }
 }
