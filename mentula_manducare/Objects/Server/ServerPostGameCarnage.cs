@@ -29,7 +29,7 @@ namespace mentula_manducare.Objects.Server
         }
         [ScriptIgnore]
         public string PlaylistFile =>
-            Server_.ServerMemory.ReadStringUnicode(0x3B3704, 600, true);
+            Server_.ServerMemory.ReadStringUnicode(0x46ECC4, 600, true);
         public string PlaylistChecksum
         {
             get
@@ -51,8 +51,8 @@ namespace mentula_manducare.Objects.Server
         public VariantM Variant;
         public Dictionary<string, string> Server => new Dictionary<string, string>
         {
-            {"XUID", "1234"},
-            {"Name", "Placeholder Server" }
+            {"XUID", Server_.XUID.ToString() },
+            {"Name", Server_.Name }
         };
 
         public List<PostGameCarnageEntry> Players
@@ -110,7 +110,7 @@ namespace mentula_manducare.Objects.Server
 
         public Dictionary<string, string> Settings => new Dictionary<string, string>
         {
-            {"Team Play", "1"}
+            {"Team Play", Server.ServerMemory.ReadByte(0x54F7E4, true).ToString()}
         };
     }
 }

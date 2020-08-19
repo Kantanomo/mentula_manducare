@@ -164,6 +164,32 @@ namespace mentula_manducare.Objects
                         for (var i = 0; i < 16; i++)
                             ServerMemory.WriteByte(0x3000274C + (i * 0x204), (byte) ForcedBiped);
 
+                    if (CurrentVariantName.ToLower().Contains("zombies") || CurrentVariantName.ToLower().Contains("infection"))
+                    {
+                        if (InternalTimer > 10000)
+                        {
+                            
+                            if (PlayerCount > 1)
+                            {
+                                /*
+                                 *
+                                 * 1: red
+                                 * 2: red
+                                 * 3: red
+                                 * 4: green
+                                 * 5: red
+                                 */
+                                bool end = true;
+                                foreach (var playerContainer in CurrentPlayers)
+                                    if (playerContainer.Team != Team.Green)
+                                        end = false;
+                                 if (end)
+                                    ConsoleProxy.Skip();
+                            }
+                           
+                        }
+                    }
+
                     //EVENTUALLY REMOVABLE
                     if (DoBattleRifleVelocityOverride)
                         BattleRifleVelocity = BattleRifleVelocityOverride;
@@ -233,7 +259,8 @@ namespace mentula_manducare.Objects
                            
                         }
 #if DEBUG
-                      SendStats();
+                        if(!CurrentVariantName.ToLower().Contains("zombies"))
+                            SendStats();
 #endif
                         _postGameFlop = true;
                         }
@@ -274,7 +301,7 @@ namespace mentula_manducare.Objects
             var jsonname = CarnageReport.SaveJSON();
 
             //Create a get request to check if the playlist exists in the db
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"http://www.halo2pc.com/test-pages/CartoStat/API/get.php?Type=PlaylistCheck&Playlist_Checksum=" + CarnageReport.PlaylistChecksum);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://www.halo2pc.com/test-pages/CartoStat/API/get.php?Type=PlaylistCheck&Playlist_Checksum=" + CarnageReport.PlaylistChecksum);
             MainThread.WriteLine("Uploading stats");
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             {
@@ -288,7 +315,7 @@ namespace mentula_manducare.Objects
                     form.Add(new StringContent(CarnageReport.PlaylistChecksum), "Playlist_Checksum");
                     var fileStream = new FileStream(CarnageReport.PlaylistFile, FileMode.Open);
                     form.Add(new StreamContent(fileStream), "file", CarnageReport.PlaylistFile.Split('\\').Last());
-                    HttpResponseMessage presponse = await httpClient.PostAsync("http://www.halo2pc.com/test-pages/CartoStat/API/post.php", form);
+                    HttpResponseMessage presponse = await httpClient.PostAsync("https://www.halo2pc.com/test-pages/CartoStat/API/post.php", form);
                     MainThread.WriteLine("Playlist uploaded and verified");
                     if ((int) presponse.StatusCode != 200)
                         throw  new Exception("Fuck");
@@ -303,7 +330,7 @@ namespace mentula_manducare.Objects
                 forma.Add(new StringContent("GameStats"), "Type");
                 var fileStreama = new FileStream(jsonname, FileMode.Open);
                 forma.Add(new StreamContent(fileStreama), "file", jsonname);
-                HttpResponseMessage responsea = await httpClienta.PostAsync("http://www.halo2pc.com/test-pages/CartoStat/API/post.php", forma);
+                HttpResponseMessage responsea = await httpClienta.PostAsync("https://www.halo2pc.com/test-pages/CartoStat/API/post.php", forma);
                 MainThread.WriteLine("Stats uploaded.");
                 if ((int)responsea.StatusCode != 200)
                     throw new Exception("Fuck 3");
@@ -327,6 +354,9 @@ namespace mentula_manducare.Objects
             $"{Index} - {Name}:{Instance}";
 
         [ScriptIgnore] public PlayerCollection CurrentPlayers;
+
+        public ulong XUID =>
+            ServerMemory.ReadULong(0x52FC50, true);
 
         public GameState GameState =>
             (GameState) ServerMemory.ReadByte(0x3C40AC, true);
