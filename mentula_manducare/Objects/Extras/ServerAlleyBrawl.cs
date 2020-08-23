@@ -16,6 +16,9 @@ namespace mentula_manducare.Objects.Extras
         public bool initFlop = false;
         public string MapName = "street_sweeper";
         public string VariantName = "Alley Brawl";
+        List<PointF> aPoints = new List<PointF>();
+        List<PointF> bPoints = new List<PointF>();
+
         public float Xmin = 71.19314f;
         public float Xmax = 73.79544f;
 
@@ -29,13 +32,12 @@ namespace mentula_manducare.Objects.Extras
         public ServerAlleyBrawl(ServerContainer baseServer)
         {
             _server = baseServer;
-            List<PointF> aPoints = new List<PointF>();
-            List<PointF> bPoints = new List<PointF>();
+            
             //Two Boxes
             ServerContainer.FillPoints(ref aPoints, 68, 11.49f, 18.89f, 51f, 58f);
             ServerContainer.FillPoints(ref bPoints, 69, 11.18f, 19.18f, 95.1f, 99.33f);
              points.AddRange(aPoints);
-            points.AddRange(bPoints);
+             points.AddRange(bPoints);
 
             //Main Side
            // ServerContainer.FillPoints(ref aPoints, 68 + 69, 11.49f, 18.89f, 51f, 99.33f);
@@ -109,21 +111,6 @@ namespace mentula_manducare.Objects.Extras
                 }
                 #endregion
 
-
-                for (int i = 0; i < 16; i++)
-                {
-                    var playerObjectIndex = _server.ServerMemory.ReadUShort(0x300026F0 + (i * 0x204));
-                    if (playerObjectIndex != ushort.MaxValue)
-                    {
-                        int playerTableIndexOffset = playerObjectIndex * 12;
-                        int playerTableObjectPointerAddress = 0x3003CAE8 + playerTableIndexOffset + 8;
-                        int playerTableObjectAddress =
-                            _server.ServerMemory.ReadInt(playerTableObjectPointerAddress);
-                        //_server.ServerMemory.WriteMemory(false, playerTableObjectAddress + 0x208,
-                        //    new byte[] {0x01, 0xFE, 0xFE, 0xFF});
-                    }
-                }
-
                 initFlop = true;
 
             }
@@ -149,13 +136,17 @@ namespace mentula_manducare.Objects.Extras
                             var playerX = _server.ServerMemory.ReadFloat(playerTableObjectAddress + 0x64);
                             var playerY = _server.ServerMemory.ReadFloat(playerTableObjectAddress + 0x68);
                             var playerZ = _server.ServerMemory.ReadFloat(playerTableObjectAddress + 0x6C);
-                            var playerCrouch = _server.ServerMemory.ReadByte(playerTableObjectAddress + 0x150);
                             if (playerX < 45F)
                             {
                                 
                                 a++;
                                 _server.ServerMemory.WriteMemory(false, playerTableObjectAddress + 0x208,
                                     new byte[] {0x01, 0xFE, 0xFE, 0xFF});
+                                //if (a > 2)
+                                //{
+                                //    this.InGameFlop = false;
+                                //    a = 0;
+                                //}
                             }
                             if(playerX < 60f && playerY < 11f && playerZ > 13f)
                                 _server.ServerMemory.WriteMemory(false, playerTableObjectAddress + 0x208,

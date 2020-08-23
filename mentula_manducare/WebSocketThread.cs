@@ -28,7 +28,8 @@ namespace mentula_manducare
             while (true)
             {
                 //Any Background tasks go here
-                Thread.Sleep(60000);
+                Thread.Sleep(30000);
+
             }
         }
 

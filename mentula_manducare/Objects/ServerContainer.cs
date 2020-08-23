@@ -42,7 +42,7 @@ namespace mentula_manducare.Objects
         {
             get
             {
-                if(_Name == "")
+                if (_Name == "")
                     _Name = ServerMemory.ReadStringUnicode(0x52FC88, 16, true);
                 return _Name;
             }
@@ -99,185 +99,186 @@ namespace mentula_manducare.Objects
         {
             this.AutoRestart = allowrestart;
             this.ServerProcess.Kill();
-            
+
         }
         public void Tick()
         {
             foreach (ServerMessage serverMessage in serverMessages)
-                if(serverMessage.Tick())
+                if (serverMessage.Tick())
                     ConsoleProxy.SendMessage(serverMessage.message);
 
             switch (GameState)
             {
                 case GameState.Lobby:
-                {
-                    if (!LobbyRunning)
                     {
-                        RunCountdown =
-                            false; //If lobby is frozen keep canceling the count down and set delay timer to absurd value
-                        XDelayTimer = ForcedXDelayTimer;
-                        RunCountdown = true;
-                    }
-                    else
-                    {
-                        if (ForceXDelay & !_xDelayFlop & RunCountdown)
+                        if (!LobbyRunning)
                         {
-                            //Fire only after initial countdown starts, reset and change time.
-                            RunCountdown = false;
+                            RunCountdown =
+                                false; //If lobby is frozen keep canceling the count down and set delay timer to absurd value
                             XDelayTimer = ForcedXDelayTimer;
                             RunCountdown = true;
-                            _xDelayFlop = true;
                         }
-                        if (_xDelayFlop & !RunCountdown)
-                            _xDelayFlop = false;
-                    }
+                        else
+                        {
+                            if (ForceXDelay & !_xDelayFlop & RunCountdown)
+                            {
+                                //Fire only after initial countdown starts, reset and change time.
+                                RunCountdown = false;
+                                XDelayTimer = ForcedXDelayTimer;
+                                RunCountdown = true;
+                                _xDelayFlop = true;
+                            }
+                            if (_xDelayFlop & !RunCountdown)
+                                _xDelayFlop = false;
+                        }
 
-                    _postGameFlop = false;
-                    break;
-                }
+                        _postGameFlop = false;
+                        break;
+                    }
                 case GameState.Starting:
                     break;
                 case GameState.InGame:
-                {
-                    //Bugfix...
-                     RunCountdown = false;
-
-                     if (!_inGameFlop)
-                     {
-                         while (ServerMemory.ReadUInt(0x4A29BC, true) == 0xFFFFFFFF ||
-                                ServerMemory.ReadInt(0x4A29BC, true) == 0)
-                         {
-                         }
-
-                         MainThread.WriteLine("Doing Ingame Operations");
-                         if (ProjectileSync)
-                         {
-                             MainThread.WriteLine("Fixing Projectiles");
-                             ToggleForcedProjectileSync();
-                         }
-
-                         _inGameFlop = true;
-                     }
-                    //Because of dynamic player table issues instead of processing the whole player collection
-                    //just iterate through all possible options, It ain't perfect but it works.
-                    if (ForcedBiped != Biped.Disabled)
-                        for (var i = 0; i < 16; i++)
-                            ServerMemory.WriteByte(0x3000274C + (i * 0x204), (byte) ForcedBiped);
-
-                    if (CurrentVariantName.ToLower().Contains("zombies") || CurrentVariantName.ToLower().Contains("infection"))
                     {
-                        if (InternalTimer > 10000)
+                        //Bugfix...
+                        RunCountdown = false;
+
+                        if (!_inGameFlop)
                         {
-                            
-                            if (PlayerCount > 1)
+                            while (ServerMemory.ReadUInt(0x4A29BC, true) == 0xFFFFFFFF ||
+                                   ServerMemory.ReadInt(0x4A29BC, true) == 0)
                             {
-                                /*
-                                 *
-                                 * 1: red
-                                 * 2: red
-                                 * 3: red
-                                 * 4: green
-                                 * 5: red
-                                 */
-                                bool end = true;
-                                foreach (var playerContainer in CurrentPlayers)
-                                    if (playerContainer.Team != Team.Green)
-                                        end = false;
-                                 if (end)
-                                    ConsoleProxy.Skip();
                             }
-                           
+
+                            MainThread.WriteLine("Doing Ingame Operations");
+                            if (ProjectileSync)
+                            {
+                                MainThread.WriteLine("Fixing Projectiles");
+                                ToggleForcedProjectileSync();
+                            }
+
+                            _inGameFlop = true;
                         }
-                    }
+                        //Because of dynamic player table issues instead of processing the whole player collection
+                        //just iterate through all possible options, It ain't perfect but it works.
+                        if (ForcedBiped != Biped.Disabled)
+                            for (var i = 0; i < 16; i++)
+                                ServerMemory.WriteByte(0x3000274C + (i * 0x204), (byte)ForcedBiped);
 
-                    //EVENTUALLY REMOVABLE
-                    if (DoBattleRifleVelocityOverride)
-                        BattleRifleVelocity = BattleRifleVelocityOverride;
-
-                    if(AFKKicktime != 0)
-                        foreach (PlayerContainer playerContainer in CurrentPlayers)
+                        if (CurrentVariantName.ToLower().Contains("zombies") || CurrentVariantName.ToLower().Contains("infection"))
                         {
-                            //VIPList is also the AFK bypass list.
-                            if (GetVIPGamers.Contains(playerContainer.Name)) continue;
-
-                            playerContainer.TickAFKCheck();
-                            if (playerContainer.HasMoved)
+                            if (InternalTimer > 10000)
                             {
-                                playerContainer.HasMoved = false;
-                                playerContainer.IsWarned = false;
-                                playerContainer.isAFK = false;
-                                ConsoleProxy.SendMessage(
-                                    $"{playerContainer.Name} that was a close one.");
-                            }
 
-                            if (playerContainer.LastMovement.ElapsedMilliseconds > AFKWarntime_ &&
-                                !playerContainer.IsWarned)
-                            {
-                                playerContainer.IsWarned = true;
-                                ConsoleProxy.SendMessage(
-                                    $"{playerContainer.Name} you are about to be kicked for being AFK you should move.");
-                            }
+                                if (PlayerCount > 1)
+                                {
+                                    /*
+                                     *
+                                     * 1: red
+                                     * 2: red
+                                     * 3: red
+                                     * 4: green
+                                     * 5: red
+                                     */
+                                    bool end = true;
+                                    foreach (var playerContainer in CurrentPlayers)
+                                        if (playerContainer.Team != Team.Green)
+                                            end = false;
+                                    if (end)
+                                        ConsoleProxy.Skip();
+                                }
 
-                            if (playerContainer.LastMovement.ElapsedMilliseconds > AFKKicktime_ &&
-                                !playerContainer.isAFK)
-                            {
-                                playerContainer.isAFK = true;
-                                ConsoleProxy.SendMessage($"{playerContainer.Name} was kicked for being AFK.");
-                                ConsoleProxy.KickPlayer(playerContainer.Name);
                             }
                         }
 
-                    if (CurrentVariantMap == powerPit.MapName && CurrentVariantName.Contains(powerPit.VariantName))
-                        powerPit.InGameTick();
+                        //EVENTUALLY REMOVABLE
+                        if (DoBattleRifleVelocityOverride)
+                            BattleRifleVelocity = BattleRifleVelocityOverride;
 
-                    if(CurrentVariantMap == deathRing.MapName && CurrentVariantName.Contains(deathRing.VariantName))
-                        deathRing.IngameTick();
-
-                    if (CurrentVariantMap == alleyBrawl.MapName && CurrentVariantName.Contains(alleyBrawl.VariantName))
-                    {
-                        alleyBrawl.InGameTick();
-                    }
-
-                    break;
-                }
-                case GameState.PostGame:
-                {
-                    _xDelayFlop = false;
-                    //Not sure how but sometimes this bugs causing the game to  get stuck in post game, will remove later just a bugfix fornow
-                    XDelayTimer = 0;
-                    RunCountdown = false;
-                    _inGameFlop = false;
-                    powerPit.InGameFlop = false;
-                    deathRing.InGameFlop = false;
-                    alleyBrawl.InGameFlop = false;
-                    if (!_postGameFlop)
-                    {
                         if (AFKKicktime != 0)
-                        {
                             foreach (PlayerContainer playerContainer in CurrentPlayers)
-                                playerContainer.AFKInit = false;
-                           
-                        }
-#if DEBUG
-                        if(!CurrentVariantName.ToLower().Contains("zombies"))
-                            SendStats();
-#endif
-                        _postGameFlop = true;
+                            {
+                                //VIPList is also the AFK bypass list.
+                                if (GetVIPGamers.Contains(playerContainer.Name)) continue;
+
+                                playerContainer.TickAFKCheck();
+                                if (playerContainer.HasMoved)
+                                {
+                                    playerContainer.HasMoved = false;
+                                    playerContainer.IsWarned = false;
+                                    playerContainer.isAFK = false;
+                                    ConsoleProxy.SendMessage(
+                                        $"{playerContainer.Name} that was a close one.");
+                                }
+
+                                if (playerContainer.LastMovement.ElapsedMilliseconds > AFKWarntime_ &&
+                                    !playerContainer.IsWarned)
+                                {
+                                    playerContainer.IsWarned = true;
+                                    ConsoleProxy.SendMessage(
+                                        $"{playerContainer.Name} you are about to be kicked for being AFK you should move.");
+                                }
+
+                                if (playerContainer.LastMovement.ElapsedMilliseconds > AFKKicktime_ &&
+                                    !playerContainer.isAFK)
+                                {
+                                    playerContainer.isAFK = true;
+                                    ConsoleProxy.SendMessage($"{playerContainer.Name} was kicked for being AFK.");
+                                    ConsoleProxy.KickPlayer(playerContainer.Name);
+                                }
+                            }
+
+                        if (CurrentVariantMap == powerPit.MapName && CurrentVariantName.Contains(powerPit.VariantName))
+                            powerPit.InGameTick();
+
+                        if (CurrentVariantMap == deathRing.MapName && CurrentVariantName.Contains(deathRing.VariantName))
+                            deathRing.IngameTick();
+
+                        if (CurrentVariantMap == alleyBrawl.MapName && CurrentVariantName.Contains(alleyBrawl.VariantName))
+                        {
+                            alleyBrawl.InGameTick();
                         }
 
-                    break;
-                }
+                        break;
+                    }
+                case GameState.PostGame:
+                    {
+                        _xDelayFlop = false;
+                        //Not sure how but sometimes this bugs causing the game to  get stuck in post game, will remove later just a bugfix fornow
+                        XDelayTimer = 0;
+                        RunCountdown = false;
+                        _inGameFlop = false;
+                        powerPit.InGameFlop = false;
+                        deathRing.InGameFlop = false;
+                        alleyBrawl.InGameFlop = false;
+                        if (!_postGameFlop)
+                        {
+                            InternalTimer = 0;
+                            if (AFKKicktime != 0)
+                            {
+                                foreach (PlayerContainer playerContainer in CurrentPlayers)
+                                    playerContainer.AFKInit = false;
+
+                            }
+#if DEBUG
+                            //if (!CurrentVariantName.ToLower().Contains("zombies"))
+                            //    SendStats();
+#endif
+                            _postGameFlop = true;
+                        }
+
+                        break;
+                    }
                 case GameState.MatchMaking:
                     break;
                 case GameState.Unknown:
                     break;
                 default:
-                {
-                    MainThread.WriteLine(
-                        $"What in the absolute tom fuckery is going on {FormattedName} Has reached a Gamestate that doesn't exist.",
-                        true);
-                    break;
-                }
+                    {
+                        MainThread.WriteLine(
+                            $"What in the absolute tom fuckery is going on {FormattedName} Has reached a Gamestate that doesn't exist.",
+                            true);
+                        break;
+                    }
             }
         }
 
@@ -317,10 +318,11 @@ namespace mentula_manducare.Objects
                     form.Add(new StreamContent(fileStream), "file", CarnageReport.PlaylistFile.Split('\\').Last());
                     HttpResponseMessage presponse = await httpClient.PostAsync("https://www.halo2pc.com/test-pages/CartoStat/API/post.php", form);
                     MainThread.WriteLine("Playlist uploaded and verified");
-                    if ((int) presponse.StatusCode != 200)
-                        throw  new Exception("Fuck");
+                    if ((int)presponse.StatusCode != 200)
+                        throw new Exception("Fuck");
                     httpClient.Dispose();
-                } else if ((int) response.StatusCode == 500)
+                }
+                else if ((int)response.StatusCode == 500)
                 {
                     throw new Exception("Fuck 2");
                 }
@@ -336,13 +338,13 @@ namespace mentula_manducare.Objects
                     throw new Exception("Fuck 3");
                 httpClienta.Dispose();
             }
-            
+
         }
         public void LoadSettings()
         {
             ForcedXDelayTimer = int.Parse(Settings.GetSetting("XDelayTimer", ForcedXDelayTimer.ToString()));
             ForcedBiped = (Biped)Enum.Parse(typeof(Biped), Settings.GetSetting("ForcedBiped", ForcedBiped.ToString()));
-            Privacy = (Privacy) Enum.Parse(typeof(Privacy), Settings.GetSetting("Privacy", Privacy.ToString()));
+            Privacy = (Privacy)Enum.Parse(typeof(Privacy), Settings.GetSetting("Privacy", Privacy.ToString()));
             MaxPlayers = int.Parse(Settings.GetSetting("MaxPlayers", MaxPlayers.ToString()));
             BattleRifleVelocityOverride = float.Parse(Settings.GetSetting("BRFix", BattleRifleVelocityOverride.ToString()));
             Description = Settings.GetSetting("Description", "");
@@ -359,7 +361,7 @@ namespace mentula_manducare.Objects
             ServerMemory.ReadULong(0x52FC50, true);
 
         public GameState GameState =>
-            (GameState) ServerMemory.ReadByte(0x3C40AC, true);
+            (GameState)ServerMemory.ReadByte(0x3C40AC, true);
 
         public int PlayerCount =>
             ServerMemory.ReadByte(0x53329C, true);
@@ -373,7 +375,7 @@ namespace mentula_manducare.Objects
         {
             get
             {
-                if(_ServiceName == "")
+                if (_ServiceName == "")
                     _ServiceName = ServerMemory.ReadStringUnicode(0x3B4AC4, 50, true);
                 return _ServiceName;
             }
@@ -383,9 +385,13 @@ namespace mentula_manducare.Objects
         /// This value is the internal clock that does not reflect match time or any other visibly trackable time, it will reset everytime there is a blue screen.
         /// It only functions during the InGame GameState.
         /// </summary>
-        public uint InternalTimer =>
-            ServerMemory.ReadUInt(0x3000257C);
-        public int MaxPlayers {
+        public uint InternalTimer
+        {
+            get => ServerMemory.ReadUInt(0x3000257C);
+            set => ServerMemory.WriteUInt(0x3000257C, value);
+        }
+        public int MaxPlayers
+        {
             get => ServerMemory.ReadByte(0x534858, true);
             set => ConsoleProxy.Players(value);
         }
@@ -419,11 +425,11 @@ namespace mentula_manducare.Objects
 
         public Privacy Privacy
         {
-            get => (Privacy) ServerMemory.ReadByte(0x534850, true);
+            get => (Privacy)ServerMemory.ReadByte(0x534850, true);
             set
             {
-                if(value == Privacy.Closed)
-                    ServerMemory.WriteByte(0x534850, (byte) Privacy.Closed, true);
+                if (value == Privacy.Closed)
+                    ServerMemory.WriteByte(0x534850, (byte)Privacy.Closed, true);
                 else
                     ConsoleProxy.Privacy(value);
             }
@@ -439,9 +445,9 @@ namespace mentula_manducare.Objects
 
         public bool ForceXDelay => ForcedXDelayTimer != 10; //If XDelayTimer is not base value return true.
         public int ForcedXDelayTimer = 10; //10 is base XDelay timing.
-        
-        
-        
+
+
+
         //Look at these dirty whores below
         public int XDelayTimer
         {
@@ -456,7 +462,7 @@ namespace mentula_manducare.Objects
         }
 
         public bool LobbyRunning = true;
-        
+
 
         public void ForceStartLobby()
         {
@@ -526,9 +532,9 @@ namespace mentula_manducare.Objects
             }
             else
             {
-                ServerMemory.WriteMemory(true, 0xE579, new byte[]{ 0xEB, 0x10 });
-                ServerMemory.WriteMemory(true, 0xE58B, new byte[]{ 0xB8, 0x05, 0x0, 0x0, 0x0});
-                ServerMemory.WriteMemory(true, 0xE590, new byte[]{ 0x83, 0xC0, 0x0});
+                ServerMemory.WriteMemory(true, 0xE579, new byte[] { 0xEB, 0x10 });
+                ServerMemory.WriteMemory(true, 0xE58B, new byte[] { 0xB8, 0x05, 0x0, 0x0, 0x0 });
+                ServerMemory.WriteMemory(true, 0xE590, new byte[] { 0x83, 0xC0, 0x0 });
             }
         }
 
@@ -574,7 +580,7 @@ namespace mentula_manducare.Objects
              */
 
             while (!isMapReady)
-            {}
+            { }
             var TagTableStart = ServerMemory.ReadInt(ServerMemory.ReadInt(0x4A29BC, true) + 8) + 0x27100;
 
             //Unset meme tag changes because super wanted to try it without them globally enabled.
@@ -616,7 +622,8 @@ namespace mentula_manducare.Objects
                         for (int j = 0; j < BarrelCount; j++) //Loop through all avaliable barrels
                         {
                             var CurrentBarrel = BarrelAddress + (j * 0xEC);
-                            if(ServerMemory.ReadShort(CurrentBarrel + 52) != 0){ //Check only here for when testing Continuous mode
+                            if (ServerMemory.ReadShort(CurrentBarrel + 52) != 0)
+                            { //Check only here for when testing Continuous mode
                                 ServerMemory.WriteShort(CurrentBarrel + 52, 0); //Set to None change to 1 to go to Continuous
                             }
                             else

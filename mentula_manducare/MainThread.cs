@@ -22,6 +22,7 @@ namespace MentulaManducare
         private static bool yes = true;
         public static Update Updater = new Update();
         public static DateTime UpdateInterval = DateTime.Now;
+        public static DateTime RestartWebSocket = DateTime.Now;
         private static Task ServerThread_;
         private static Task WebSocketThread_;
         private static Task InputThread_;
@@ -126,6 +127,10 @@ namespace MentulaManducare
                     UpdateInterval = DateTime.Now;
                 }
 #endif
+                //Restart the web socket thread every 45 minutes because SignalR is a cunt.
+                if (DateTime.Now - RestartWebSocket > TimeSpan.FromMinutes(45))
+                    WebSocketThread_ = Task.Factory.StartNew(WebSocketThread.Run);
+
                 if (WebSocketThread_.IsFaulted || WebSocketThread_.IsCompleted || WebSocketThread_.IsCanceled)
                     WebSocketThread_ = Task.Factory.StartNew(WebSocketThread.Run);
                 if (ServerThread_.IsFaulted || ServerThread_.IsCompleted || ServerThread_.IsCanceled)
