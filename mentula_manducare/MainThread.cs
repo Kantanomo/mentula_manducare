@@ -22,7 +22,6 @@ namespace MentulaManducare
         private static bool yes = true;
         public static Update Updater = new Update();
         public static DateTime UpdateInterval = DateTime.Now;
-        public static DateTime RestartWebSocket = DateTime.Now;
         private static Task ServerThread_;
         private static Task WebSocketThread_;
         private static Task InputThread_;
@@ -39,7 +38,7 @@ namespace MentulaManducare
         #endregion
 
 
-        public static string[] MutableErrors = new []
+        public static string[] MutableErrors = new[]
         {
             //SignalR Error that just gets thrown no way to fix it
             "Microsoft.AspNet.SignalR.Hubs.ConnectionIdProxy",
@@ -105,7 +104,6 @@ namespace MentulaManducare
             #endregion
 
             yes = false;
-
 #if !DEBUG
             Updater.CheckUpdates();
 #endif
@@ -127,10 +125,6 @@ namespace MentulaManducare
                     UpdateInterval = DateTime.Now;
                 }
 #endif
-                //Restart the web socket thread every 45 minutes because SignalR is a cunt.
-                if (DateTime.Now - RestartWebSocket > TimeSpan.FromMinutes(45))
-                    WebSocketThread_ = Task.Factory.StartNew(WebSocketThread.Run);
-
                 if (WebSocketThread_.IsFaulted || WebSocketThread_.IsCompleted || WebSocketThread_.IsCanceled)
                     WebSocketThread_ = Task.Factory.StartNew(WebSocketThread.Run);
                 if (ServerThread_.IsFaulted || ServerThread_.IsCompleted || ServerThread_.IsCanceled)
@@ -144,18 +138,25 @@ namespace MentulaManducare
 
             //Console.SetCursorPosition(InputLeft, InputTop);
             //
-            if (isInput == false) Console.ResetColor();
-            if (yes) Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.SetCursorPosition(0, InputTop);
-            Console.WriteLine(Input);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, InputTop + 1);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Enter Command:" + new string(' ', Console.WindowWidth - 16));
-            
-            InputTop++;
+            try
+            {
+                if (isInput == false) Console.ResetColor();
+                if (yes) Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.SetCursorPosition(0, InputTop);
+                Console.WriteLine(Input);
+                Console.Write(new string(' ', Console.WindowWidth));
+                Console.SetCursorPosition(0, InputTop + 1);
+                Console.Write(new string(' ', Console.WindowWidth));
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Enter Command:" + new string(' ', Console.WindowWidth - 16));
 
+                InputTop++;
+            }
+            catch (Exception e)
+            {
+                InputTop = 0;
+                Console.Clear();
+            }
             //Console.SetCursorPosition(InputLeft, InputTop);
         }
 
@@ -164,7 +165,8 @@ namespace MentulaManducare
         {
             get
             {
-                if (!basePathCheck) { 
+                if (!basePathCheck)
+                {
                     if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\"))
                         Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\");
                     if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Mentula\\Logs"))

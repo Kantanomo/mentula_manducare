@@ -260,8 +260,8 @@ namespace mentula_manducare.Objects
 
                             }
 #if DEBUG
-                            //if (!CurrentVariantName.ToLower().Contains("zombies"))
-                            //    SendStats();
+                            if (!CurrentVariantName.ToLower().Contains("zombies"))
+                                SendStats();
 #endif
                             _postGameFlop = true;
                         }
@@ -551,7 +551,7 @@ namespace mentula_manducare.Objects
         }
 
         public bool isMapReady =>
-            ServerMemory.ReadStringAscii(ServerMemory.ReadInt(ServerMemory.ReadInt(0x4A29BC, true) + 8) + 0x27100, 4) == "gtam";
+            ServerMemory.ReadStringAscii(ServerMemory.ReadInt(ServerMemory.ReadInt(0x4A29BC, true) + 8) + 0x27100, 4) == "gtam" && InternalTimer > 200;
         private void ToggleForcedProjectileSync()
         {
             /*
