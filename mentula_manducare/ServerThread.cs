@@ -34,6 +34,9 @@ namespace mentula_manducare
         public static ServerCollection Servers = new ServerCollection();
         public static int TickCount = 0;
         public static TimeSpan TPS = TimeSpan.Zero;
+        public static int TPT = 0;
+        public static int TPC = 0;
+        public static int SleepTime = 10;
         public static void Run()
         {
 
@@ -46,16 +49,28 @@ namespace mentula_manducare
                 foreach (ServerContainer serverContainer in Servers)
                     serverContainer.Tick();
 
-                Thread.Sleep(15);
+                Thread.Sleep(SleepTime);
                 
                 TPS = TPS.Add(watch.Elapsed);
                 watch.Restart();
                 TickCount++;
                 if (TPS.Seconds >= 1)
                 {
-                    //MainThread.WriteLine($"Current Server Thread Tickrate: {TickCount}");
+                    var newTime = Math.Floor(SleepTime + (SleepTime - (30f * (SleepTime / TickCount))));
+                    if (newTime < 0)
+                        newTime = 1;
+                    //MainThread.WriteLine($"Server Thread Tickrate: {TickCount}");
+                    SleepTime = (int)newTime;
+                    TPT += TickCount;
                     TickCount = 0;
                     TPS = TimeSpan.Zero;
+                    TPC++;
+                    if(TPC == 10)
+                    {
+                        TPC = 0;
+                        //MainThread.WriteLine($"Average Server Thread Tickrate: {TPT / 10}/10s");
+                        TPT = 0;
+                    }
                     DetectServers();
                 }
 

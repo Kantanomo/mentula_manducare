@@ -14,7 +14,7 @@ namespace mentula_manducare.Classes
 {
     public class Update
     {
-        public static string RemoteBaseURI = "http://halo2pc.com/mentula/monitor/";
+        public static string RemoteBaseURI = "https://halo2pc.com/mentula/monitor/";
 #if !DEBUG
         public string RemoteVersionURI = $"{RemoteBaseURI}latest.txt";
 #else

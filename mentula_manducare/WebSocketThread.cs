@@ -38,21 +38,26 @@ namespace mentula_manducare
             SignalRDisposable?.Dispose();
             string url = "http://+:9922";
             SignalRDisposable = WebApp.Start(url, Startup.Configuration);
-            MainThread.WriteLine($"SignalR Server running on {url}");
+            MainThread.WriteLine($"SignalR Server running on {url}", true);
         }
     }
 
     internal static class Startup
     {
+        private static bool GlobalConfig = false;
         public static void Configuration(IAppBuilder app)
         {
             var hubConfiguration = new HubConfiguration();
             hubConfiguration.EnableDetailedErrors = false;
             app.UseCors(CorsOptions.AllowAll);
             app.MapSignalR("/signalr", hubConfiguration);
-            GlobalHost.Configuration.ConnectionTimeout = TimeSpan.FromSeconds(60);
-            GlobalHost.Configuration.DisconnectTimeout = TimeSpan.FromSeconds(60);
-            GlobalHost.Configuration.KeepAlive = TimeSpan.FromSeconds((int)Math.Floor(60F/3F));
+            if (!GlobalConfig)
+            {
+                GlobalConfig = true;
+                GlobalHost.Configuration.ConnectionTimeout = TimeSpan.FromSeconds(60);
+                GlobalHost.Configuration.DisconnectTimeout = TimeSpan.FromSeconds(60);
+                GlobalHost.Configuration.KeepAlive = TimeSpan.FromSeconds((int)Math.Floor(60F / 3F));
+            }
         }
     }
    

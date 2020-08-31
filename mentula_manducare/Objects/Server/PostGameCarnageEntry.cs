@@ -178,7 +178,7 @@ namespace mentula_manducare.Objects.Server
            {
                var arr = new ushort[24];
                for (var i = 0; i < 24; i++)
-                   arr[i] = _memory.ReadUShort(calcRTPCROffset + 0x4A + (i * 2), true);
+                   arr[i] = _memory.ReadUShort(calcRTPCROffset + 0x4C + (i * 2), true);
                return arr;
            }
        }
@@ -192,7 +192,7 @@ namespace mentula_manducare.Objects.Server
                {
                    var arr = new ushort[6];
                    for (var j = 0; j < 6; j++)
-                       arr[j] = _memory.ReadUShort(calcRTPCROffset + 0xDE + (i * 0x10) + (j * 2), true);
+                       arr[j] = _memory.ReadUShort(calcRTPCROffset + 0xF0 + (i * 0x10) + (j * 2), true);
                    list.Add(arr);
                }
 

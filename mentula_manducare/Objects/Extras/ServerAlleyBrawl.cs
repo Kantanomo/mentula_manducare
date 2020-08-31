@@ -66,14 +66,13 @@ namespace mentula_manducare.Objects.Extras
                 var spawnPointReflexOffset =
                     _server.ServerMemory.ReadInt(_server.ServerMemory.BlamCachePointer(0x143c104));
                 var spawnPointReflexStart = _server.ServerMemory.BlamCachePointer(spawnPointReflexOffset);
-                MainThread.WriteLine(spawnPointCount);
                 for (var i = 0; i < spawnPointCount; i++)
                 {
                     var itemOffset = i * 52;
                     var itemAddress = spawnPointReflexStart + itemOffset;
                     _server.ServerMemory.WriteFloat(itemAddress, points[i].X);
                     _server.ServerMemory.WriteFloat(itemAddress + 4, points[i].Y);
-                    _server.ServerMemory.WriteFloat(itemAddress + 8, 2.87f);
+                    _server.ServerMemory.WriteFloat(itemAddress + 8, 7.87f);
                 }
 
                 //Move Objective locations.

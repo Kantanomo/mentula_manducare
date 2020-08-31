@@ -148,11 +148,10 @@ namespace mentula_manducare.Objects
                                    ServerMemory.ReadInt(0x4A29BC, true) == 0)
                             {
                             }
-
-                            MainThread.WriteLine("Doing Ingame Operations");
+                            WriteToConsole("Doing Ingame Operations");
                             if (ProjectileSync)
                             {
-                                MainThread.WriteLine("Fixing Projectiles");
+                                WriteToConsole("Fixing Projectiles");
                                 ToggleForcedProjectileSync();
                             }
 
@@ -259,10 +258,10 @@ namespace mentula_manducare.Objects
                                     playerContainer.AFKInit = false;
 
                             }
-#if DEBUG
+
                             if (!CurrentVariantName.ToLower().Contains("zombies"))
                                 SendStats();
-#endif
+
                             _postGameFlop = true;
                         }
 
@@ -274,13 +273,14 @@ namespace mentula_manducare.Objects
                     break;
                 default:
                     {
-                        MainThread.WriteLine(
-                            $"What in the absolute tom fuckery is going on {FormattedName} Has reached a Gamestate that doesn't exist.",
-                            true);
+                        WriteToConsole(
+                            $"What in the absolute tom fuckery is going on, reached a Gamestate that doesn't exist.");
                         break;
                     }
             }
         }
+        public void WriteToConsole(string message) =>
+            MainThread.WriteLine($"[{Name}]: {message}");
 
         public void SaveSettings()
         {
@@ -299,46 +299,51 @@ namespace mentula_manducare.Objects
         public async void SendStats()
         {
             //Store the carnage report to a file
-            var jsonname = CarnageReport.SaveJSON();
-
-            //Create a get request to check if the playlist exists in the db
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://www.halo2pc.com/test-pages/CartoStat/API/get.php?Type=PlaylistCheck&Playlist_Checksum=" + CarnageReport.PlaylistChecksum);
-            MainThread.WriteLine("Uploading stats");
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            WriteToConsole("Uploading stats");
+            try
             {
-                //If the playlist doesn't exist (status code 201) upload it to the server
-                if ((int)response.StatusCode == 201)
+                var jsonname = CarnageReport.SaveJSON();
+                //Create a get request to check if the playlist exists in the db
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://www.halo2pc.com/test-pages/CartoStat/API/get.php?Type=PlaylistCheck&Playlist_Checksum=" + CarnageReport.PlaylistChecksum);
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
-                    //Create a post request sending the hpl file
-                    HttpClient httpClient = new HttpClient();
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent("PlaylistUpload"), "Type");
-                    form.Add(new StringContent(CarnageReport.PlaylistChecksum), "Playlist_Checksum");
-                    var fileStream = new FileStream(CarnageReport.PlaylistFile, FileMode.Open);
-                    form.Add(new StreamContent(fileStream), "file", CarnageReport.PlaylistFile.Split('\\').Last());
-                    HttpResponseMessage presponse = await httpClient.PostAsync("https://www.halo2pc.com/test-pages/CartoStat/API/post.php", form);
-                    MainThread.WriteLine("Playlist uploaded and verified");
-                    if ((int)presponse.StatusCode != 200)
-                        throw new Exception("Fuck");
-                    httpClient.Dispose();
+                    //If the playlist doesn't exist (status code 201) upload it to the server
+                    if ((int)response.StatusCode == 201)
+                    {
+                        //Create a post request sending the hpl file
+                        HttpClient httpClient = new HttpClient();
+                        MultipartFormDataContent form = new MultipartFormDataContent();
+                        form.Add(new StringContent("PlaylistUpload"), "Type");
+                        form.Add(new StringContent(CarnageReport.PlaylistChecksum), "Playlist_Checksum");
+                        var fileStream = new FileStream(CarnageReport.PlaylistFile, FileMode.Open);
+                        form.Add(new StreamContent(fileStream), "file", CarnageReport.PlaylistFile.Split('\\').Last());
+                        HttpResponseMessage presponse = await httpClient.PostAsync("https://www.halo2pc.com/test-pages/CartoStat/API/post.php", form);
+                        WriteToConsole("Playlist uploaded and verified");
+                        if ((int)presponse.StatusCode != 200)
+                            throw new Exception("Fuck");
+                        httpClient.Dispose();
+                    }
+                    else if ((int)response.StatusCode == 500)
+                    {
+                        throw new Exception("Fuck 2");
+                    }
+                    //Create a post request sending the stats json
+                    HttpClient httpClienta = new HttpClient();
+                    MultipartFormDataContent forma = new MultipartFormDataContent();
+                    forma.Add(new StringContent("GameStats"), "Type");
+                    var fileStreama = new FileStream(jsonname, FileMode.Open);
+                    forma.Add(new StreamContent(fileStreama), "file", jsonname);
+                    HttpResponseMessage responsea = await httpClienta.PostAsync("https://www.halo2pc.com/test-pages/CartoStat/API/post.php", forma);
+                    WriteToConsole("Stats uploaded.");
+                    if ((int)responsea.StatusCode != 200)
+                        throw new Exception("Fuck 3");
+                    httpClienta.Dispose();
                 }
-                else if ((int)response.StatusCode == 500)
-                {
-                    throw new Exception("Fuck 2");
-                }
-                //Create a post request sending the stats json
-                HttpClient httpClienta = new HttpClient();
-                MultipartFormDataContent forma = new MultipartFormDataContent();
-                forma.Add(new StringContent("GameStats"), "Type");
-                var fileStreama = new FileStream(jsonname, FileMode.Open);
-                forma.Add(new StreamContent(fileStreama), "file", jsonname);
-                HttpResponseMessage responsea = await httpClienta.PostAsync("https://www.halo2pc.com/test-pages/CartoStat/API/post.php", forma);
-                MainThread.WriteLine("Stats uploaded.");
-                if ((int)responsea.StatusCode != 200)
-                    throw new Exception("Fuck 3");
-                httpClienta.Dispose();
+            } catch(Exception e)
+            {
+                WriteToConsole("Uploading stats failed.");
+                Logger.AppendToLog("ErrorLog", e.Message + e.StackTrace);
             }
-
         }
         public void LoadSettings()
         {
@@ -492,6 +497,8 @@ namespace mentula_manducare.Objects
             set
             {
                 FormattedDescription = value;
+                if(FormattedDescription.Length > 31)
+                    FormattedDescription = FormattedDescription.Substring(0, 31);
                 var bytes = new List<byte>();
                 var strings = ServerContainer.SymbolsSpecifier.Split(value);
                 var charArray = new[] { '[', ']' };
